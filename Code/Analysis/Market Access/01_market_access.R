@@ -2,98 +2,44 @@
 # Distance to Roads
 
 # Load Data --------------------------------------------------------------------
-viirs_grid <- readRDS(file.path(final_data_file_path, "VIIRS Grid", "iraq_viirs_grid_data.Rds"))
+iraq_adm3 <- readRDS(file.path(final_data_file_path, "subdistrict_data", "subdistrict_population_marketaccess.Rds"))
 
-viirs_grid$viirs_1greater <- as.numeric(viirs_grid$avg_rad_df >= 1)
-viirs_grid$viirs_2greater <- as.numeric(viirs_grid$avg_rad_df >= 2)
-viirs_grid$viirs_5greater <- as.numeric(viirs_grid$avg_rad_df >= 5)
+# Log Market Access ------------------------------------------------------------
+MA_vars <- names(iraq_adm3)[grepl("MA_", names(iraq_adm3))]
 
-viirs_grid_project_roads <- viirs_grid[viirs_grid$distance_project_roads <= 10,][,j=list(viirs_mean = mean(avg_rad_df, na.rm = TRUE),
-                                                                                         viirs_1greater_prop = mean(viirs_1greater, na.rm = TRUE),
-                                                                                         viirs_2greater_prop = mean(viirs_2greater, na.rm = TRUE),
-                                                                                         viirs_5greater_prop = mean(viirs_5greater, na.rm = TRUE)), by = list(year, month)]
-viirs_grid_project_roads$roads <- "Project Roads"
+for(var in MA_vars){
+  iraq_adm3[[var]] <- log(iraq_adm3[[var]])
+}
 
-viirs_grid_highways <- viirs_grid[(viirs_grid$distance_primary_route <= 10) & 
-                                    (viirs_grid$distance_project_roads >= 10),][,j=list(viirs_mean = mean(avg_rad_df, na.rm = TRUE),
-                                                                                        viirs_1greater_prop = mean(viirs_1greater, na.rm = TRUE),
-                                                                                        viirs_2greater_prop = mean(viirs_2greater, na.rm = TRUE),
-                                                                                        viirs_5greater_prop = mean(viirs_5greater, na.rm = TRUE)), by = list(year, month)]
-viirs_grid_highways$roads <- "Primary Roads"
-rm(viirs_grid)
+# Map --------------------------------------------------------------------------
+iraq_adm3$id <- row.names(iraq_adm3)
+iraq_adm3_tidy <- tidy(iraq_adm3)
+iraq_adm3_tidy <- merge(iraq_adm3_tidy, iraq_adm3, by="id")
 
-viirs_grid_monthly <- bind_rows(viirs_grid_project_roads, viirs_grid_highways) %>% as.data.frame
-viirs_grid_monthly <- melt(viirs_grid_monthly, id=c("year","roads", "month"))
+p1 <- ggplot() +
+  geom_polygon(data=iraq_adm3_tidy, aes(x=long, y=lat, group=group, fill=MA_dist_theta5), color="black") +
+  labs(fill = "Market\nAccess\n(logged)",
+       title = "Market Access (theta = 5)\n ") +
+  scale_fill_continuous(type = "viridis") +
+  theme_void() +
+  coord_quickmap() +
+  theme(plot.title = element_text(hjust = 0.5))
 
-viirs_grid_monthly$month[nchar(viirs_grid_monthly$month) == 1] <- paste0("0", viirs_grid_monthly$month[nchar(viirs_grid_monthly$month) == 1])
-viirs_grid_monthly$date <- paste(viirs_grid_monthly$year, viirs_grid_monthly$month, "01", sep="-")
-viirs_grid_monthly$date <- as.Date(viirs_grid_monthly$date)
+p2 <- ggplot() +
+  geom_polygon(data=iraq_adm3_tidy, aes(x=long, y=lat, group=group, fill=MA_dist_theta5_exclude100km), color="black") +
+  labs(fill = "Market\nAccess\n(logged)",
+       title = "Market Access (theta = 5),\nExcluding Areas within 100km") +
+  scale_fill_continuous(type = "viridis") +
+  theme_void() +
+  coord_quickmap() +
+  theme(plot.title = element_text(hjust = 0.5))
 
-viirs_grid_annual <- summaryBy(value ~ variable + year + roads, data=as.data.frame(viirs_grid_monthly), FUN=mean, keep.names=T)
+p_all <- ggarrange(p1, p2)
+ggsave(p_all, filename = file.path(figures_file_path, "market_access.png"), height=6, width=12)
 
-viirs_grid_annual <- viirs_grid_annual %>% as.data.frame
-viirs_grid_monthly <- viirs_grid_monthly %>% as.data.frame
 
-viirs_grid_annual$date <- as.Date(paste(viirs_grid_annual$year, "06", "01", sep="-"))
 
-# Figures ----------------------------------------------------------------------
-height = 5
-width = 6
 
-viirs_mean_fig <- ggplot() +
-  geom_line(data=viirs_grid_monthly[viirs_grid_monthly$variable == "viirs_mean",],
-            aes(x=date, y=value, group=roads, color=roads),
-            size=1, alpha=0.5) +
-  geom_line(data=viirs_grid_annual[viirs_grid_annual$variable == "viirs_mean",],
-            aes(x=date, y=value, group=roads, color=roads),
-            size=2) +
-  geom_point(data=viirs_grid_annual[viirs_grid_annual$variable == "viirs_mean",],
-            aes(x=date, y=value, group=roads, color=roads),
-            size=4) +
-  #geom_point(size=4) +
-  theme_minimal() +
-  labs(x="",
-       y="",
-       title="Average Nighttime Light Radiance",
-       color="") +
-  theme(plot.title=element_text(hjust=0.5, face="bold"))
-ggsave(viirs_mean_fig, filename=file.path(figures_file_path, "viirs_radiance_trends.png"), height=height, width=width)  
 
-viirs_rad_1greater_fig <- ggplot() +
-  geom_line(data=viirs_grid_monthly[viirs_grid_monthly$variable == "viirs_1greater_prop",],
-            aes(x=date, y=value, group=roads, color=roads),
-            size=1, alpha=0.5) +
-  geom_line(data=viirs_grid_annual[viirs_grid_annual$variable == "viirs_1greater_prop",],
-            aes(x=date, y=value, group=roads, color=roads),
-            size=2) +
-  geom_point(data=viirs_grid_annual[viirs_grid_annual$variable == "viirs_1greater_prop",],
-            aes(x=date, y=value, group=roads, color=roads),
-            size=4) +
-  #geom_point(size=4) +
-  theme_minimal() +
-  labs(x="",
-       y="",
-       title="Proportion of Cells with Radiance > 1",
-       color="") +
-  theme(plot.title=element_text(hjust=0.5, face="bold"))
-ggsave(viirs_rad_1greater_fig, filename=file.path(figures_file_path, "viirs_radiance_1greater_trends.png"), height=height, width=width)  
 
-viirs_rad_5greater_fig <- ggplot() +
-  geom_line(data=viirs_grid_monthly[viirs_grid_monthly$variable == "viirs_5greater_prop",],
-            aes(x=date, y=value, group=roads, color=roads),
-            size=1, alpha=0.5) +
-  geom_line(data=viirs_grid_annual[viirs_grid_annual$variable == "viirs_5greater_prop",],
-            aes(x=date, y=value, group=roads, color=roads),
-            size=2) +
-  geom_point(data=viirs_grid_annual[viirs_grid_annual$variable == "viirs_5greater_prop",],
-            aes(x=date, y=value, group=roads, color=roads),
-            size=4) +
-  #geom_point(size=4) +
-  theme_minimal() +
-  labs(x="",
-       y="",
-       title="Proportion of Cells with Radiance > 5",
-       color="") +
-  theme(plot.title=element_text(hjust=0.5, face="bold"))
-ggsave(viirs_rad_5greater_fig, filename=file.path(figures_file_path, "viirs_radiance_5greater_trends.png"), height=height, width=width)  
 
