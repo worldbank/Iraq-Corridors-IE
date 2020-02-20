@@ -1,6 +1,7 @@
 # Add Population to Subdistrict Shapefile
 
 WALKING_SPEED <- 5
+RESOLUTION_KM <- 3
 
 # Load Data --------------------------------------------------------------------
 #### ADM3 Populations
@@ -47,10 +48,10 @@ crs(iraq_adm3_df) <- CRS(UTM_IRQ)
 
 # Make Transition Layer --------------------------------------------------------
 #### Make blank raster
-r <- raster(xmn=iraq_adm3_utm@bbox[1,1], 
-            xmx=iraq_adm3_utm@bbox[1,2], 
-            ymn=iraq_adm3_utm@bbox[2,1], 
-            ymx=iraq_adm3_utm@bbox[2,2], 
+r <- raster(xmn=iraq_adm3@bbox[1,1], 
+            xmx=iraq_adm3@bbox[1,2], 
+            ymn=iraq_adm3@bbox[2,1], 
+            ymx=iraq_adm3@bbox[2,2], 
             crs=UTM_IRQ, 
             resolution = 3*1000)
 
@@ -108,12 +109,14 @@ tt_df <- tt_df[tt_df$dest_uid != tt_df$orig_uid,]
 MA_df <- tt_df %>% 
   group_by(orig_uid) %>%
   summarise(MA_tt_theta1  = sum(dest_population / (travel_time^1)),
+            MA_tt_theta3_8  = sum(dest_population / (travel_time^3.8)),
             MA_tt_theta5  = sum(dest_population / (travel_time^5)),
             MA_tt_theta10 = sum(dest_population / (travel_time^10)),
             MA_tt_theta15 = sum(dest_population / (travel_time^15)),
             MA_tt_theta20 = sum(dest_population / (travel_time^20)),
             
             MA_dist_theta1  = sum(dest_population / (distance_meters^1)),
+            MA_dist_theta3_8  = sum(dest_population / (distance_meters^3.8)),
             MA_dist_theta5  = sum(dest_population / (distance_meters^5)),
             MA_dist_theta10 = sum(dest_population / (distance_meters^10)),
             MA_dist_theta15 = sum(dest_population / (distance_meters^15)),
@@ -123,12 +126,14 @@ MA_df <- tt_df %>%
 MA_exclude100km_df <- tt_df[tt_df$distance_meters > 100*1000,] %>% 
   group_by(orig_uid) %>%
   summarise(MA_tt_theta1_exclude100km  = sum(dest_population / (travel_time^1)),
+            MA_tt_theta3_8_exclude100km  = sum(dest_population / (travel_time^3.8)),
             MA_tt_theta5_exclude100km  = sum(dest_population / (travel_time^5)),
             MA_tt_theta10_exclude100km = sum(dest_population / (travel_time^10)),
             MA_tt_theta15_exclude100km = sum(dest_population / (travel_time^15)),
             MA_tt_theta20_exclude100km = sum(dest_population / (travel_time^20)),
             
             MA_dist_theta1_exclude100km  = sum(dest_population / (distance_meters^1)),
+            MA_dist_theta3_8_exclude100km  = sum(dest_population / (distance_meters^3.8)),
             MA_dist_theta5_exclude100km  = sum(dest_population / (distance_meters^5)),
             MA_dist_theta10_exclude100km = sum(dest_population / (distance_meters^10)),
             MA_dist_theta15_exclude100km = sum(dest_population / (distance_meters^15)),
@@ -145,4 +150,37 @@ iraq_adm3 <- spTransform(iraq_adm3, CRS("+proj=longlat +datum=WGS84 +no_defs +el
 
 saveRDS(iraq_adm3, file.path(final_data_file_path, "subdistrict_data", "subdistrict_population_marketaccess.Rds"))
 
+
+##### Figure
+roads_r_spdf <- as(roads_r, "SpatialPixelsDataFrame")
+roads_r_df <- as.data.frame(roads_r_spdf)
+colnames(roads_r_df) <- c("value", "x", "y")
+roads_r_df$value <- factor(roads_r_df$value)
+roads_r_df$value[roads_r_df$value %in% 5] <- NA
+
+p_speed <- ggplot() +
+  geom_tile(data=roads_r_df, aes(x=x, y=y, fill=value), alpha=1) +
+  labs(fill = "Speed\nLimit",
+       title = "Speeds on\nGridded Surface") + 
+  theme_void() +
+  theme(plot.title = element_text(hjust = 0.5)) + 
+  coord_quickmap()
+
+path <- shortestPath(cost_t,
+                     iraq_adm3_df[iraq_adm3_df$ADM3_EN %in% "Baghdad Al-Jedeeda",],
+                     iraq_adm3_df,
+                     output = "SpatialLines")
+path$id <- 1:length(path)
+p_speed_path <- ggplot() +
+  geom_tile(data=roads_r_df, aes(x=x, y=y, fill=value), alpha=0.6) +
+  geom_path(data=path, aes(x=long, y=lat, group=group)) +
+  labs(fill = "Speed\nLimit",
+       title = "Shortest Paths from\nBaghdad to All Sub-Districts") + 
+  theme_void() +
+  theme(plot.title = element_text(hjust = 0.5)) + 
+  coord_quickmap()
+
+p_all <- ggarrange(p_speed, p_speed_path, nrow=1)
+ggsave(p_all, filename = file.path(figures_file_path, "shortest_path_example.png"), height = 4, width = 10)
+  
 
