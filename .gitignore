@@ -1,0 +1,9 @@
+# Ignore Data
+*.csv
+*.dta
+*.rds
+*.Rds
+*.rda
+*.Rda
+*.xls
+*.xlsx
