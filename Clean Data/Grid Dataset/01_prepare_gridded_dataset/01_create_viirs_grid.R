@@ -12,8 +12,9 @@ primary_routes <- readOGR(dsn=".", layer="primary_routes")
 primary_routes <- primary_routes[primary_routes$ROAD_RUNWA == "Hard /Paved",]
 
 #### VIIRS
-viirs_avg_rad <- stack(file.path(raw_data_file_path, "viirs_monthly", "iraq_viirs_2012_to_2018_avg_rad.tif"))
-viirs_cf_cvg <- stack(file.path(raw_data_file_path, "viirs_monthly", "iraq_viirs_2012_to_2018_cf_cvg.tif"))
+viirs_avg_rad <- stack(file.path(raw_data_file_path, "viirs_monthly", "iraq_viirs_raw_monthly_start_201204_avg_rad.tif"))
+viirs_cf_cvg <- stack(file.path(raw_data_file_path,  "viirs_monthly", "iraq_viirs_raw_monthly_start_201204_cf_cvg.tif"))
+
 num_bands <- dim(viirs_avg_rad)[3]
 
 # Prep Shapefiles that Limit Cells in Analysis ---------------------------------
@@ -31,14 +32,14 @@ iraq <- subset(iraq, select=c(in_country))
 
 # Determine which cells are in Analysis ----------------------------------------
 #### Determine Cell in Analysis
-raster_temp <- raster(file.path(raw_data_file_path, "viirs_monthly", "iraq_viirs_2012_to_2018_avg_rad.tif"), band=1)
+raster_temp <- raster(file.path(raw_data_file_path, "viirs_monthly", "iraq_viirs_raw_monthly_start_201204_avg_rad.tif"), band=1)
 raster_temp_coords <- coordinates(raster_temp) %>% as.data.frame
 coordinates(raster_temp_coords) <- ~x+y
 raster_temp_coords$id <- 1:length(raster_temp_coords)
 crs(raster_temp_coords) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
 
-raster_OVER_roads <- over(raster_temp_coords, iraq_highways_buff)
-raster_OVER_country <- over(raster_temp_coords, iraq)
+raster_OVER_country <- over_chunks(raster_temp_coords, iraq, "sum", 11000)
+raster_OVER_roads <- over_chunks(raster_temp_coords, iraq_highways_buff, "sum", 11000)
 
 cell_in_analysis <- (raster_OVER_roads$in_road_buffer %in% 1) & (raster_OVER_country$in_country %in% 1)
 
@@ -63,11 +64,11 @@ extract_raster_value_in_country <- function(band_num, raster_file_path, cell_in_
 }
 
 avg_rad_df <- pbmclapply(1:num_bands, extract_raster_value_in_country, 
-                         file.path(raw_data_file_path, "viirs_monthly", "iraq_viirs_2012_to_2018_avg_rad.tif"), 
+                         file.path(raw_data_file_path, "viirs_monthly", "iraq_viirs_raw_monthly_start_201204_avg_rad.tif"), 
                          cell_in_analysis, "viirs_rad", mc.cores=1) %>% unlist
 
 cf_cvg_df <- pbmclapply(1:num_bands, extract_raster_value_in_country, 
-                        file.path(raw_data_file_path, "viirs_monthly", "iraq_viirs_2012_to_2018_cf_cvg.tif"), 
+                        file.path(raw_data_file_path, "viirs_monthly", "iraq_viirs_raw_monthly_start_201204_cf_cvg.tif"), 
                         cell_in_analysis, "viirs_cf_cvg", mc.cores=1) %>% unlist
 
 id <- rep(1:num_obs_per_band, num_bands)

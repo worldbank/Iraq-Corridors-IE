@@ -23,8 +23,7 @@ gc()
 
 # Export -----------------------------------------------------------------------
 saveRDS(viirs_grid, file=file.path(final_data_file_path, "VIIRS Grid", "iraq_viirs_grid_data.Rds"))
-write.csv(viirs_grid, file=file.path(final_data_file_path, "VIIRS Grid", "iraq_viirs_grid_data.csv"), row.names=F)
-write.csv(viirs_grid[viirs_grid$year %in% 2012,], file=file.path(final_data_file_path, "VIIRS Grid", "iraq_viirs_grid_data_2012.csv"), row.names=F)
+saveRDS(viirs_grid[viirs_grid$year %in% 2012,], file=file.path(final_data_file_path, "VIIRS Grid", "iraq_viirs_grid_data_2012.Rds"))
 
 
 

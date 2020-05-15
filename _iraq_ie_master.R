@@ -13,6 +13,7 @@ tables_file_path <- file.path(project_file_path, "Results", "Tables")
 code_file_path <- file.path(project_file_path, "Code")
 
 UTM_IRQ <- '+init=epsg:3394'
+N_CORES <- 2
 
 # Libraries --------------------------------------------------------------------
 library(raster)
@@ -33,5 +34,7 @@ library(reshape)
 library(doBy)
 library(readstata13)
 library(haven)
+library(ggmap)
 source("https://raw.githubusercontent.com/ramarty/rgeos_chunks/master/R/rgeos_chunks.R")
+source("https://raw.githubusercontent.com/ramarty/fast-functions/master/R/functions_in_chunks.R")
 
