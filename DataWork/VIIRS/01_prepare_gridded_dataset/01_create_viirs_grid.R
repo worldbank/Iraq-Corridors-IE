@@ -14,7 +14,7 @@
 #   6.3 Bank cross section (only id)
 
 # 0. Settings ------------------------------------------------------------------
-DIST_PRIM_ROAD <- 30 # kilometer distance to primary road to be included in 
+DIST_PRIM_ROAD <- 25 # kilometer distance to primary road to be included in 
                      # analysis. If not within distance, cell dropped.
 
 # 1. Load Data -----------------------------------------------------------------
