@@ -11,7 +11,8 @@ time_invariant_data_names <- c("irq_adm_info.Rds",
                          "irq_dist_r78_km.Rds",
                          "irq_market_access.Rds",
                          "irq_population.Rds",
-                         "irq_road_length_km.Rds")
+                         "irq_road_length_km.Rds",
+                         "irq_dist_road_type.Rds")
 
 #irq_viirs_monthly.Rds
 
