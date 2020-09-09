@@ -30,7 +30,7 @@ calc_road_length <- function(roads, adm){
 # Load ADM Data ----------------------------------------------------------------
 #### ADM 3
 iraq_adm3 <- readOGR(dsn = file.path(project_file_path, "Data", "CSO Subdistricts", "RawData"),
-        layer = "irq_admbnda_adm3_cso_20190603")
+                     layer = "irq_admbnda_adm3_cso_20190603")
 iraq_adm3$uid <- 1:nrow(iraq_adm3)
 
 iraq_adm3_utm <- spTransform(iraq_adm3, CRS(UTM_IRQ))
@@ -55,8 +55,8 @@ iraq_adm3$road_length_km_primary <- calc_road_length(roads_primary, iraq_adm3_ut
 # Distance to r78am ------------------------------------------------------------
 # Load/reproject
 r78 <- readRDS(file.path(project_file_path, "Data",
-                           "HDX Primary Roads", "FinalData","r7_r8ab",
-                           "r7_r8ab_prj_rd.Rds")) 
+                         "HDX Primary Roads", "FinalData","r7_r8ab",
+                         "r7_r8ab_prj_rd.Rds")) 
 r78 <- r78 %>% spTransform(CRS(UTM_IRQ))
 
 # Dissolve
@@ -67,21 +67,34 @@ r78 <- raster::aggregate(r78, by = "id")
 iraq_adm3$dist_r78_km <- gDistance(iraq_adm3_utm, r78, byid = T) %>% 
   as.vector() %>%
   `/`(1000) # meters to kilometers
-  
+
+# Distance to Baghdad ----------------------------------------------------------
+baghdad <- data.frame(name = "baghdad",
+                      lat = 33.3152, 
+                      lon = 44.3661)
+
+coordinates(baghdad) <- ~lon+lat
+crs(baghdad) <- CRS("+init=epsg:4326")
+baghdad <- spTransform(baghdad, CRS(UTM_IRQ))
+
+iraq_adm3$distance_to_baghdad <- gDistance(iraq_adm3_utm, baghdad, byid = T) %>% 
+  as.vector() %>%
+  `/`(1000) # meters to kilometers
+
 # Nighttime Lights -------------------------------------------------------------
 viirs_all <- raster(file.path(project_file_path, "Data", "VIIRS", "RawData", "monthly", 
                               "iraq_viirs_raw_monthly_start_201204_avg_rad.tif"))
 viirs_stacked_df <- lapply(1:93, function(i){
   
   print(i)
-
+  
   viirs <- raster(file.path(raw_data_file_path, "viirs_monthly", "iraq_viirs_raw_monthly_start_201204_avg_rad.tif"), i) %>% velox()
   
   viirs_mean <- viirs$extract(sp = iraq_adm3, fun=function(x) mean(x, na.rm=T))
   
   viirs_df <- data.frame(viirs_mean = viirs_mean,
                          uid = iraq_adm3$uid,
-             viirs_time_id = i)
+                         viirs_time_id = i)
   
   return(viirs_df)
 }) %>% bind_rows()
