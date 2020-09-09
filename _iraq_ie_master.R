@@ -13,6 +13,7 @@ UTM_IRQ <- '+init=epsg:3394'
 N_CORES <- 2
 
 # Libraries --------------------------------------------------------------------
+library(purrr)
 library(raster)
 library(dplyr)
 library(parallel)

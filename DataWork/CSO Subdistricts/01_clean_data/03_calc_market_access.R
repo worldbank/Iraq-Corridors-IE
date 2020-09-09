@@ -6,11 +6,25 @@ RESOLUTION_KM <- 3
 # TODO(Rob): Check with Ethiopia scripts to ensure getting correct time result
 
 # Load Data --------------------------------------------------------------------
-#### ADM3 Populations
-iraq_adm3 <- readRDS(file.path(project_file_path, "Data", "CSO Subdistricts", "FinalData", "subdistrict_timeinvariant_data_sp.Rds"))
+#### Load and merge relevant subdistrict variables
+iraq_pop <- readRDS(file.path(project_file_path, "Data", "CSO Subdistricts", 
+                               "FinalData", "individual_files",
+                               "irq_population.Rds"))
+
+iraq_road_length <- readRDS(file.path(project_file_path, "Data", "CSO Subdistricts", 
+                              "FinalData", "individual_files",
+                              "irq_road_length_km.Rds"))
+
+iraq_area <- readRDS(file.path(project_file_path, "Data", "CSO Subdistricts", 
+                                      "FinalData", "individual_files",
+                                      "irq_area.Rds"))
+
+iraq_adm3 <- merge(iraq_pop, iraq_road_length@data, by = "uid")
+iraq_adm3 <- merge(iraq_adm3, iraq_area@data, by = "uid")
 
 #### Road Shapefile
-roads <- readRDS(file.path(project_file_path, "Data", "OpenStreetMap", "FinalData", "iraq_roads_rds", "gis_osm_roads_free_1_speeds.Rds"))
+roads <- readRDS(file.path(project_file_path, "Data", "OpenStreetMap",
+                           "FinalData", "iraq_roads_rds", "gis_osm_roads_free_1_speeds.Rds"))
 
 # Reproject to UTM -------------------------------------------------------------
 # We do this now, as opposed to at the beginning of the script, because now the
@@ -171,13 +185,19 @@ MA_df <- merge(MA_df, MA_exclude10km_df, by = "orig_uid", all = T)
 MA_df <- merge(MA_df, MA_exclude100km_df, by = "orig_uid", all = T)
 
 # Export -----------------------------------------------------------------------
-# Merge back with data
+## Merge back with data
 MA_df <- MA_df %>% 
   dplyr::rename(uid = orig_uid)
 iraq_adm3 <- merge(iraq_adm3, MA_df, by="uid")
 iraq_adm3 <- spTransform(iraq_adm3, CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"))
 
-saveRDS(iraq_adm3, file.path(project_file_path, "Data", "CSO Subdistricts", "FinalData", "subdistrict_population_marketaccess.Rds"))
+## Remove unneeded variables
+iraq_adm3@data <- iraq_adm3@data %>%
+  dplyr::select(-c(population, road_length_km_primary, area_km2))
+
+## Export
+saveRDS(iraq_adm3, file.path(project_file_path, "Data", "CSO Subdistricts", "FinalData",
+                            "individual_files",  "irq_market_access.Rds"))
 
 
 
