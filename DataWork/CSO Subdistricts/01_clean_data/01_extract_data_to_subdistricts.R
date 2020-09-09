@@ -52,6 +52,22 @@ roads <- spTransform(roads, CRS(UTM_IRQ))
 roads_primary <- roads[grepl("primary|secondary|motorway|trunk", roads$fclass),]
 iraq_adm3$road_length_km_primary <- calc_road_length(roads_primary, iraq_adm3_utm)
 
+# Distance to r78am ------------------------------------------------------------
+# Load/reproject
+r78 <- readRDS(file.path(project_file_path, "Data",
+                           "HDX Primary Roads", "FinalData","r7_r8ab",
+                           "r7_r8ab_prj_rd.Rds")) 
+r78 <- r78 %>% spTransform(CRS(UTM_IRQ))
+
+# Dissolve
+r78$id <- 1
+r78 <- raster::aggregate(r78, by = "id")
+
+# Calculate distance
+iraq_adm3$dist_r78_km <- gDistance(iraq_adm3_utm, r78, byid = T) %>% 
+  as.vector() %>%
+  `/`(1000) # meters to kilometers
+  
 # Nighttime Lights -------------------------------------------------------------
 viirs_all <- raster(file.path(project_file_path, "Data", "VIIRS", "RawData", "monthly", 
                               "iraq_viirs_raw_monthly_start_201204_avg_rad.tif"))
