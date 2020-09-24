@@ -8,6 +8,9 @@ if(Sys.info()[["user"]] == "robmarty") project_file_path <- "~/Dropbox/World Ban
 if(Sys.info()[["user"]] == "WB521633") github_file_path <- "C:/Users/wb521633/Documents/Github/Iraq-Corridors-IE"
 if(Sys.info()[["user"]] == "robmarty") github_file_path <- "~/Documents/Github/Iraq-Corridors-IE"
 
+api_keys <- read.csv("~/Dropbox/World Bank/Webscraping/Files for Server/api_keys.csv",
+                     stringsAsFactors = F)
+
 # Global Parameters ------------------------------------------------------------
 UTM_IRQ <- '+init=epsg:3394'
 N_CORES <- 2
@@ -34,6 +37,9 @@ library(readstata13)
 library(haven)
 library(ggmap)
 library(gtools)
+library(xml2)
+library(mapsapi)
+library(leaflet)
 source("https://raw.githubusercontent.com/ramarty/rgeos_chunks/master/R/rgeos_chunks.R")
 source("https://raw.githubusercontent.com/ramarty/fast-functions/master/R/functions_in_chunks.R")
 
