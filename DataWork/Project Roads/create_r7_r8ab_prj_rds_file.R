@@ -13,7 +13,7 @@ stations <- read.csv(file.path(project_file_path, "Data", "Road Improvement",
 
 ## Subset and add centroid
 # Roads are motorways - subset not to make adding centroids quicker
-roads <- roads[roads$fclass %in% "motorway",]
+roads <- roads[roads$ref %in% c("1", "31"),]
 roads@data <- roads %>% 
   gCentroid(byid = T) %>% 
   coordinates() %>%
@@ -40,15 +40,28 @@ lat_station_end <- stations_1$lat[stations_1$station %in% "0+400"]
 split_extent_r7 <- extent(roads_ref_1_prj)
 split_extent_r8b <- extent(roads_ref_1_prj)
 
-split_extent_r7@ymax <- lat_station_end
-split_extent_r8b@ymin <- lat_station_end
+split_extent_r7@ymin <- lat_station_end
+split_extent_r8b@ymax <- lat_station_end
 
-r7 <- crop(roads_ref_1_prj, split_extent_r7)
-r8b <- crop(roads_ref_1_prj, split_extent_r8b)
+split_extent_r7 <- as(split_extent_r7, 'SpatialPolygons')  
+split_extent_r8b <- as(split_extent_r8b, 'SpatialPolygons')  
+
+split_extent_r7$id <- 1
+split_extent_r8b$id <- 1
+
+r7 <- raster::intersect(roads_ref_1_prj, split_extent_r7)
+r8b <- raster::intersect(roads_ref_1_prj, split_extent_r8b)
+
+leaflet() %>%
+  addTiles() %>%
+  addPolylines(data = r7, color = "green") %>%
+  addPolygons(data = split_extent_r7) %>%
+  addCircles(data = stations[stations$road %in% "r7",])
 
 # r8a --------------------------------------------------------------------------
-# No need to further subset
-r8a <- roads_ref_31
+# Just need to restrict to motorway, then lines up
+r8a <- roads_ref_31[roads_ref_31$fclass %in% "motorway",]
+r8a$id <- 1 # temp variable so variables same for all roads
 
 # Clean and append -------------------------------------------------------------
 r7$road <- "r7"
@@ -65,13 +78,31 @@ prj_roads@data <- prj_roads@data %>%
 # Export -----------------------------------------------------------------------
 ## rds
 saveRDS(prj_roads, file.path(project_file_path, 
-                                 "Data", "Project Roads", "Data",
-                                 "r7_r8ab"))
+                             "Data", "Project Roads", "Data",
+                             "r7_r8ab"))
 
 ## geojson
 prj_roads_sf <- st_as_sf(prj_roads)
 st_write(prj_roads_sf, file.path(project_file_path, 
-                                     "Data", "Project Roads", "Data",
-                                     "r7_r8ab.geojson"),
+                                 "Data", "Project Roads", "Data",
+                                 "r7_r8ab.geojson"),
          delete_dsn = T)
+
+
+#### CHECK =====================================================================
+leaflet() %>%
+  addTiles() %>%
+  addPolylines(data = prj_roads[prj_roads$road %in% "r7",], color = "blue") %>%
+  addCircles(data = stations[stations$road %in% "r7",], color = "yellow")
+
+leaflet() %>%
+  addTiles() %>%
+  addPolylines(data = prj_roads[prj_roads$road %in% "r8a",], color = "blue") %>%
+  addCircles(data = stations[stations$road %in% "r8a",], color = "yellow")
+
+leaflet() %>%
+  addTiles() %>%
+  addPolylines(data = prj_roads[prj_roads$road %in% "r8b",], color = "blue") %>%
+  addCircles(data = stations[stations$road %in% "r8b",], color = "yellow")
+
 
