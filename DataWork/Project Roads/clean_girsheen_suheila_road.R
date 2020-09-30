@@ -1,13 +1,11 @@
-# Create Spatial File of R7/R8ab Project Roads
+# Create geojson and rds of Girsheen-Suheila Road
 
 # Load Data --------------------------------------------------------------------
-roads <- readRDS(file.path(project_file_path,
-                           "Data", "OpenStreetMap", 
-                           "FinalData","iraq_roads_rds", 
-                           "gis_osm_roads_free_1.Rds"))
+road <- xmlParse(file.path(project_file_path, "Data", "Project Roads", 
+                           "Girsheen-Suheila Road", "RawData", 
+                           "Girsheen-Suheila (Coordinates).xml"))
 
-stations <- read.csv(file.path(project_file_path, "Data", "Road Improvement", 
-                               "All Stations", "stations.csv"))
+
 
 # Subset Roads -----------------------------------------------------------------
 
@@ -51,6 +49,12 @@ split_extent_r8b$id <- 1
 
 r7 <- raster::intersect(roads_ref_1_prj, split_extent_r7)
 r8b <- raster::intersect(roads_ref_1_prj, split_extent_r8b)
+
+leaflet() %>%
+  addTiles() %>%
+  addPolylines(data = r7, color = "green") %>%
+  addPolygons(data = split_extent_r7) %>%
+  addCircles(data = stations[stations$road %in% "r7",])
 
 # r8a --------------------------------------------------------------------------
 # Just need to restrict to motorway, then lines up
