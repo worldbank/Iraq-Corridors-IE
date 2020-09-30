@@ -64,10 +64,9 @@ stargazer(reg1,
           digits = 3,
           omit.stat = c("ser"),
           add.lines = list(c("Month and Sub-District FE", "No", "Yes", "Yes")),
-          #out = file.path(project_file_path,"Tables","Reg_NTLXMonthly_5km.tex"),
+          out = file.path(project_file_path,"Tables","Reg_NTLXMonthly_5km.tex"),
           float = F,
-          header = F,
-          type = "text")
+          header = F)
 
 remove(ntl_subdist_5km,reg1,reg2,reg3)
 
@@ -75,7 +74,6 @@ remove(ntl_subdist_5km,reg1,reg2,reg3)
 ##sub-districts within the 10km range
 ntl_subdist_10km <-
   ntl_subdist[which(ntl_subdist$dist_r78_km <= 10),]
-
 
 ###FE with FELM
 reg1 <- lm(transformed_viirs_mean ~ roadimprovement,
@@ -87,7 +85,7 @@ reg2 <- plm(transformed_viirs_mean ~ roadimprovement,
             index = c("ADM3_EN", "viirs_time_id"), 
             model = "within")
 
-reg3 <- plm(transformed_viirs_mean ~ roadimprovement + avg_hh_exp.mean + no_of_conflicts + no_of_settlements + missing , 
+reg3 <- plm(transformed_viirs_mean ~ roadimprovement + avg_hh_exp.mean + no_of_conflicts + no_of_settlements + pop_new + missing , 
             data = ntl_subdist_10km, 
             index = c("ADM3_EN", "viirs_time_id"), 
             model = "within")
@@ -96,15 +94,14 @@ reg3 <- plm(transformed_viirs_mean ~ roadimprovement + avg_hh_exp.mean + no_of_c
 stargazer(reg1,
           reg2,
           reg3,
-          keep = c("roadimprovement", "average_hh_exp.mean","no_of_conflicts","no_of_settlements"),
+          keep = c("roadimprovement", "average_hh_exp.mean","no_of_conflicts","no_of_settlements","pop_new"),
           font.size = "small",
           digits = 3,
           omit.stat = c("ser"),
           add.lines = list(c("Month and Sub-District FE", "No", "Yes", "Yes")),
-          #out = file.path(tables_file_path, "Reg_NTLXMonthly_10km.tex"),
+          out = file.path(project_file_path,"Tables","Reg_NTLXMonthly_10km.tex"),
           float = F,
-          header = F,
-          type = "text")
+          header = F)
 
 remove(ntl_subdist_10km,reg1,reg2,reg3)
 
@@ -122,7 +119,7 @@ reg2 <- plm(transformed_viirs_mean ~ roadimprovement,
             index = c("ADM3_EN", "viirs_time_id"), 
             model = "within")
 
-reg3 <- plm(transformed_viirs_mean ~ roadimprovement + avg_hh_exp.mean + no_of_conflicts + no_of_settlements + missing , 
+reg3 <- plm(transformed_viirs_mean ~ roadimprovement + avg_hh_exp.mean + no_of_conflicts + no_of_settlements + pop_new + missing , 
             data = ntl_subdist_20km, 
             index = c("ADM3_EN", "viirs_time_id"), 
             model = "within")
@@ -131,12 +128,11 @@ reg3 <- plm(transformed_viirs_mean ~ roadimprovement + avg_hh_exp.mean + no_of_c
 stargazer(reg1,
           reg2,
           reg3,
-          keep = c("roadimprovement", "average_hh_exp.mean","no_of_conflicts","no_of_settlements"),
+          keep = c("roadimprovement", "average_hh_exp.mean","no_of_conflicts","no_of_settlements","pop_new"),
           font.size = "small",
           digits = 3,
           omit.stat = c("ser"),
           add.lines = list(c("Month and Sub-District FE", "No", "Yes", "Yes")),
-          #out = file.path(tables_file_path, "Reg_NTLXMonthly_20km.tex"),
+          out = file.path(project_file_path, "Tables" ,"Reg_NTLXMonthly_20km.tex"),
           float = F,
-          header = F,
-          type = "text")
+          header = F)
