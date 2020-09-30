@@ -1,90 +1,76 @@
 # Create Spatial File of R7/R8ab Project Roads
 
-# CHECKS ---------
+# Load Data --------------------------------------------------------------------
 roads <- readRDS(file.path(project_file_path,
-                                 "Data", "OpenStreetMap", 
-                                 "FinalData","iraq_roads_rds", 
+                           "Data", "OpenStreetMap", 
+                           "FinalData","iraq_roads_rds", 
                            "gis_osm_roads_free_1.Rds"))
 
-coords <- read_delim(file.path(project_file_path,
-                               "Data","Road Improvement","R7","R7-stations.txt"),
-                     "\t", escape_double = FALSE, trim_ws = TRUE, skip = 2)
+stations <- read.csv(file.path(project_file_path, "Data", "Road Improvement", 
+                               "All Stations", "stations.csv"))
 
-# Rename Variables --------------------------------------------------------
-coords <- coords %>%
-  dplyr::rename("lon" = "Easting (m)",
-                "lat" = "Northing (m)")
+# Subset Roads -----------------------------------------------------------------
 
+## Subset and add centroid
+# Roads are motorways - subset not to make adding centroids quicker
+roads <- roads[roads$fclass %in% "motorway",]
+roads@data <- roads %>% 
+  gCentroid(byid = T) %>% 
+  coordinates() %>%
+  as.data.frame() %>%
+  dplyr::rename(lon_centroid = x, 
+                lat_centroid = y) %>%
+  bind_cols(roads@data)
 
-names(coords)[names(coords) == "Easting (m)"] <- "lon"
-names(coords)[names(coords) == "Northing (m)"] <- "lat"
-names(coords)[names(coords) == "R7-Project Station"] <- "station"
+## Break roads into route 1 and 31, and stations along each
+roads_ref_1 <- roads[roads$ref %in% "1",]
+roads_ref_31 <- roads[roads$ref %in% "31",]
 
-coordinates(coords) <- ~lon+lat
-proj4string(coords) <- CRS("+proj=utm +zone=38N +datum=WGS84 +units=m +ellps=WGS84") 
-coords <- spTransform(coords,CRS("+proj=longlat +datum=WGS84"))
+stations_1 <- stations[stations$road %in% c("r7", "r8b"),]
+stations_31 <- stations[stations$road %in% c("r8a"),]
 
+# r7 and r8b -------------------------------------------------------------------
+## Project Road portion or route 1
+roads_ref_1_prj <- roads_ref_1[roads_ref_1$lat_centroid >= min(stations_1$lat) &
+                                 roads_ref_1$lat_centroid <= max(stations_1$lat),]
 
-roads <- roads[grepl("trunk|motorway|primary", roads$fclass), ]
-roads$name <- roads$name %>% as.character()
-roads$ref <- roads$ref %>% as.character()
+## Split by r7/r8
+lat_station_end <- stations_1$lat[stations_1$station %in% "0+400"]
 
-roads <- roads[roads$ref %in% "1",]
+split_extent_r7 <- extent(roads_ref_1_prj)
+split_extent_r8b <- extent(roads_ref_1_prj)
 
-leaflet() %>%
-  addTiles() %>%
-  addPolylines(data = roads, popup = ~ref) %>%
-  addCircles(data = coords, color = "red") 
+split_extent_r7@ymax <- lat_station_end
+split_extent_r8b@ymin <- lat_station_end
 
+r7 <- crop(roads_ref_1_prj, split_extent_r7)
+r8b <- crop(roads_ref_1_prj, split_extent_r8b)
 
-# Load Road Data ---------------------------------------------------------------
-# Highways
-primary_routes <- readOGR(dsn=file.path(project_file_path, "Data", "HDX Primary Roads", "RawData"), 
-                          layer="primary_routes")
-primary_routes <- primary_routes[primary_routes$ROAD_RUNWA %in% "Hard /Paved",]
+# r8a --------------------------------------------------------------------------
+# No need to further subset
+r8a <- roads_ref_31
 
-# Restrict r7 to project area --------------------------------------------------
-r7_northern_point <- data.frame(id = 1,
-                                lat = 31.101247,
-                                lon = 46.008721)
-r7_southern_point <- data.frame(id = 1,
-                                lat = 30.409683,
-                                lon = 47.520057)
+# Clean and append -------------------------------------------------------------
+r7$road <- "r7"
+r8b$road <- "r8b"
+r8a$road <- "r8a"
 
-r7 <- primary_routes[primary_routes$ROUTE_NUMB %in% 8,]
+prj_roads <- list(r7, r8a, r8b) %>% 
+  do.call(what = "rbind")
 
-r7_centroids <- gCentroid(r7, byid=T) %>% 
-  coordinates %>% 
-  as.data.frame %>%
-  dplyr::rename(long = x) %>%
-  dplyr::rename(lat = y)
-
-r7_projectarea <- r7[(r7_centroids$lat < r7_northern_point$lat) & 
-                       (r7_centroids$lat > r7_southern_point$lat),]
-r7_projectarea$route <- "r7"
-r7_projectarea <- raster::aggregate(r7_projectarea %>% gBuffer(width = 0.001/111, 
-                                                               byid=T), 
-                                    by="route")
-
-# Restrict r8 to project area --------------------------------------------------
-r8_projectarea <- primary_routes[primary_routes$ROUTE_NUMB %in% c(31),]
-r8_projectarea$route <- "r8"
-r8_projectarea <- raster::aggregate(r8_projectarea %>% gBuffer(width = 0.001/111, 
-                                                               byid=T), 
-                                    by="route")
-
-# Append -----------------------------------------------------------------------
-project_roads <- list(r7_projectarea, r8_projectarea) %>% do.call(what="rbind")
+prj_roads@data <- prj_roads@data %>%
+  dplyr::select(road, osm_id, fclass) %>%
+  mutate(source = "OpenStreetMap")
 
 # Export -----------------------------------------------------------------------
 ## rds
-saveRDS(project_roads, file.path(project_file_path, 
-                                 "Data", "HDX Primary Roads", "FinalData", "r7_r8ab", 
-                                 "r7_r8ab_prj_rd.Rds"))
+saveRDS(prj_roads, file.path(project_file_path, 
+                                 "Data", "Project Roads", "Data",
+                                 "r7_r8ab"))
 
 ## geojson
-project_roads_sf <- st_as_sf(project_roads)
-st_write(project_roads_sf, file.path(project_file_path, 
-                                     "Data", "HDX Primary Roads", "FinalData", "r7_r8ab", 
-                                     "r7_r8ab_prj_rd.geojson"))
+prj_roads_sf <- st_as_sf(prj_roads)
+st_write(prj_roads_sf, file.path(project_file_path, 
+                                     "Data", "Project Roads", "Data",
+                                     "r7_r8ab.geojson"))
 

@@ -33,6 +33,12 @@ r8_stations_b <- r8_stations %>%
 r8_stations <- bind_rows(r8_stations_a,
                          r8_stations_b)
 
+# Fix Outlier Coordinates ------------------------------------------------------
+# Problem station: r8_stations$lat == 336408
+# TODO: Instead of remove, give correct coordinate
+
+r8_stations <- r8_stations[r8_stations$lat > 3000000,]
+
 # Coordinates to WGS84 ---------------------------------------------------------
 coordinates(r8_stations) <- ~lon+lat
 proj4string(r8_stations) <- CRS("+proj=utm +zone=38N +datum=WGS84 +units=m +ellps=WGS84") 
