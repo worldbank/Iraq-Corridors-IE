@@ -78,13 +78,15 @@ prj_roads@data <- prj_roads@data %>%
 # Export -----------------------------------------------------------------------
 ## rds
 saveRDS(prj_roads, file.path(project_file_path, 
-                             "Data", "Project Roads", "Data",
-                             "r7_r8ab"))
+                             "Data", "Project Roads", "R7_R8ab",
+                             "FinalData",
+                             "r7_r8ab.Rds"))
 
 ## geojson
 prj_roads_sf <- st_as_sf(prj_roads)
 st_write(prj_roads_sf, file.path(project_file_path, 
-                                 "Data", "Project Roads", "Data",
+                                 "Data", "Project Roads", "R7_R8ab",
+                                 "FinalData",
                                  "r7_r8ab.geojson"),
          delete_dsn = T)
 
