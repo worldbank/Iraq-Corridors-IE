@@ -72,5 +72,6 @@ saveRDS(prj_roads, file.path(project_file_path,
 prj_roads_sf <- st_as_sf(prj_roads)
 st_write(prj_roads_sf, file.path(project_file_path, 
                                      "Data", "Project Roads", "Data",
-                                     "r7_r8ab.geojson"))
+                                     "r7_r8ab.geojson"),
+         delete_dsn = T)
 
