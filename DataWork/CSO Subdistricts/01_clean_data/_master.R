@@ -16,6 +16,8 @@ source(file.path(SUBDIST_CLEAN_PATH, "02_extract_population.R"))
 source(file.path(SUBDIST_CLEAN_PATH, "02_extract_road_density.R"))
 source(file.path(SUBDIST_CLEAN_PATH, "02_extract_viirs.R"))
 source(file.path(SUBDIST_CLEAN_PATH, "02_extract_distance_road_types.R"))
+source(file.path(SUBDIST_CLEAN_PATH, "02_extract_conflicts.R"))
+source(file.path(SUBDIST_CLEAN_PATH, "02_extract_road_improvement.R"))
 
 ## 3. Extract data to shapefile that depends on data from step 2
 source(file.path(SUBDIST_CLEAN_PATH, "03_calc_market_access.R"))

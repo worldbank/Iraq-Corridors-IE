@@ -15,3 +15,4 @@ iraq_adm3$population <- population_vl$extract(sp = iraq_adm3, fun=function(x) su
 saveRDS(iraq_adm3, file.path(project_file_path, 
                                    "Data", "CSO Subdistricts", "FinalData",  
                                    "individual_files","irq_population.Rds"))
+

@@ -8,11 +8,14 @@ if(Sys.info()[["user"]] == "robmarty") project_file_path <- "~/Dropbox/World Ban
 if(Sys.info()[["user"]] == "WB521633") github_file_path <- "C:/Users/wb521633/Documents/Github/Iraq-Corridors-IE"
 if(Sys.info()[["user"]] == "robmarty") github_file_path <- "~/Documents/Github/Iraq-Corridors-IE"
 
+if(Sys.info()[["user"]] == "chitr") project_file_path <- "C:/Users/chitr/Dropbox/Iraq IE"
+
 # Global Parameters ------------------------------------------------------------
 UTM_IRQ <- '+init=epsg:3394'
 N_CORES <- 2
 
 # Libraries --------------------------------------------------------------------
+library(sp)
 library(purrr)
 library(raster)
 library(dplyr)
@@ -34,6 +37,14 @@ library(readstata13)
 library(haven)
 library(ggmap)
 library(gtools)
+library(readxl)
+library(ggrepel)
+library(readr)
+library(plm)
+library(stargazer)
+
+
 source("https://raw.githubusercontent.com/ramarty/rgeos_chunks/master/R/rgeos_chunks.R")
 source("https://raw.githubusercontent.com/ramarty/fast-functions/master/R/functions_in_chunks.R")
+
 
