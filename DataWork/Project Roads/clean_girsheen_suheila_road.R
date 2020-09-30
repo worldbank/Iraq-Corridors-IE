@@ -21,8 +21,7 @@ road_df <- road %>%
   bind_cols(road_df)
 
 # Make Road Polygon ------------------------------------------------------------
-# Grab subset of dataframe that is an ordered list of points. Make into
-# polyline
+# Grab subset of dataframe that is an ordered list of points. Make into polyline
 
 rd_ord_df <- road_df %>%
   mutate(Name = Name %>% as.character()) %>%
@@ -60,7 +59,7 @@ writeRDS(road_sdf, file.path(project_file_path, "Data", "Project Roads",
                              "gs_road_polyline.Rds"))
 
 
-#### CHECK
+#### CHECK - - - - - - - - - -
 leaflet() %>%
   addTiles() %>%
   addPolylines(data=road_sdf, color="green", weight=15) %>%
