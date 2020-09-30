@@ -14,6 +14,7 @@ N_CORES <- 2
 
 # Libraries --------------------------------------------------------------------
 library(raster)
+library(readr)
 library(dplyr)
 library(parallel)
 library(pbmcapply)
