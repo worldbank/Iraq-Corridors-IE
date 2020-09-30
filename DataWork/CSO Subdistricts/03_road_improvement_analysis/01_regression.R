@@ -10,10 +10,20 @@ ntl_subdist$transformed_viirs_mean <-
 
 
 # Temp Road Improvement var -----------------------------------------------
-
 ntl_subdist$roadimprovement <- ifelse(ntl_subdist$year > 2015,1,0)
 
 # Treating missing values -------------------------------------------------
+## include population growth (assuming a 2.5% annual growth)
+ntl_subdist$pop_new <- ntl_subdist$population
+ntl_subdist$pop_new[ntl_subdist$year == 2016] <- ntl_subdist$population[ntl_subdist$year == 2016]*(1+2.5)
+ntl_subdist$pop_new[ntl_subdist$year == 2017] <- ntl_subdist$population[ntl_subdist$year == 2017]*(1+2.5)^2
+ntl_subdist$pop_new[ntl_subdist$year == 2018] <- ntl_subdist$population[ntl_subdist$year == 2017]*(1+2.5)^3
+ntl_subdist$pop_new[ntl_subdist$year == 2019] <- ntl_subdist$population[ntl_subdist$year == 2017]*(1+2.5)^4
+
+##settlement var should only reflect 2014 figures
+ntl_subdist$no_of_settlements <- ifelse(ntl_subdist$year == 2014,
+                                        ntl_subdist$no_of_settlements,0)
+
 ##replace NA with 0
 ntl_subdist[is.na(ntl_subdist)] <- 0
 
@@ -27,7 +37,7 @@ ntl_subdist$missing <-
 # Regressions (5km) -------------------------------------------------------------
 ##sub-districts within the 5km range
 ntl_subdist_5km <-
-  ntl_subdist[which(ntl_subdist$dist_r78_km <= 5),]
+  ntl_subdist[which(ntl_subdist$dist_r78_km <=5),]
 
 
 ###FE with PLM
@@ -40,7 +50,7 @@ reg2 <- plm(transformed_viirs_mean ~ roadimprovement,
             index = c("ADM3_EN", "viirs_time_id"), 
             model = "within")
 
-reg3 <- plm(transformed_viirs_mean ~ roadimprovement + avg_hh_exp.mean + no_of_conflicts + no_of_settlements + missing , 
+reg3 <- plm(transformed_viirs_mean ~ roadimprovement + avg_hh_exp.mean + no_of_conflicts + no_of_settlements + pop_new + missing , 
             data = ntl_subdist_5km, 
             index = c("ADM3_EN", "viirs_time_id"), 
             model = "within")
@@ -49,12 +59,12 @@ reg3 <- plm(transformed_viirs_mean ~ roadimprovement + avg_hh_exp.mean + no_of_c
 stargazer(reg1,
           reg2,
           reg3,
-          keep = c("roadimprovement", "average_hh_exp.mean","no_of_conflicts","no_of_settlements"),
+          keep = c("roadimprovement", "average_hh_exp.mean","no_of_conflicts","no_of_settlements", "pop_new"),
           font.size = "small",
           digits = 3,
           omit.stat = c("ser"),
           add.lines = list(c("Month and Sub-District FE", "No", "Yes", "Yes")),
-          #out = file.path(tables_file_path, "Reg_NTLXMonthly_5km.tex"),
+          #out = file.path(project_file_path,"Tables","Reg_NTLXMonthly_5km.tex"),
           float = F,
           header = F,
           type = "text")
