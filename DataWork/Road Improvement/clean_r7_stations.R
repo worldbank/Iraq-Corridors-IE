@@ -7,10 +7,17 @@ r7_stations <- read_delim(file.path(project_file_path,
 
 # Rename Variables -------------------------------------------------------------
 r7_stations <- r7_stations %>%
-  dplyr::rename("lon" = "Easting (m)",
+  dplyr::rename("no" = "No.",
+                "lon" = "Easting (m)",
                 "lat" = "Northing (m)",
-                "station" = "R7-Project Station") %>%
-  dplyr::select(lon, lat, station)
+                "station" = "R7-Project Station",
+                "bench_mark_id" = "Bench Mark ID",
+                "elevation_m" = "Elevation (m)",
+                "section" = "Section",
+                "notes" = "Notes : Description  on the DWG") %>%
+  dplyr::select(lon, lat, station, bench_mark_id, elevation_m,
+                section, notes) %>%
+  mutate(road = "r7")
 
 # Coordinates to WGS84 ---------------------------------------------------------
 coordinates(r7_stations) <- ~lon+lat
