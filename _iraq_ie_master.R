@@ -16,8 +16,6 @@ api_keys <- read.csv("~/Dropbox/World Bank/Webscraping/Files for Server/api_keys
 #>>>>>>> 5a4136e344d0b198e51718a4151406e0b56b9130
 
 
-
-
 # Global Parameters ------------------------------------------------------------
 UTM_IRQ <- '+init=epsg:3394'
 N_CORES <- 2

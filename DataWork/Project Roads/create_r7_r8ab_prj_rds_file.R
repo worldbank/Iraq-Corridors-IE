@@ -69,6 +69,7 @@ prj_roads@data <- prj_roads@data %>%
   dplyr::select(road, osm_id, fclass) %>%
   mutate(source = "OpenStreetMap")
 
+
 # Export -----------------------------------------------------------------------
 ## rds
 saveRDS(prj_roads, file.path(project_file_path, 

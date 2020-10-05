@@ -55,8 +55,11 @@ coordinates(raster_temp_coords) <- ~x+y
 raster_temp_coords$id <- 1:length(raster_temp_coords)
 crs(raster_temp_coords) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
 
+
 # Quick-ish way to tell if intersects
 raster_OVER_country <- over_chunks(raster_temp_coords, iraq, "sum", 11000)
+
+raster_temp_coords <- spTransform(raster_temp_coords, CRS("+proj=longlat +datum=WGS84 +no_defs"))
 raster_OVER_roads <- over_chunks(raster_temp_coords, iraq_highways_buff, "sum", 11000)
 
 cell_in_analysis <- (raster_OVER_roads$in_road_buffer %in% 1) & (raster_OVER_country$in_country %in% 1)
