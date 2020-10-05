@@ -3,12 +3,16 @@
 
 # Load Data --------------------------------------------------------------------
 # Grid
-grid <- readRDS(file.path(project_file_path, "Data", "VIIRS", "FinalData","Separate Files Per Variable", "iraq_grid_blank.Rds"))
+grid <- readRDS(file.path(project_file_path, 
+                          "Data", "VIIRS", "FinalData",
+                          "Separate Files Per Variable", "iraq_grid_blank.Rds"))
 coordinates(grid) <- ~lon+lat
 crs(grid) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
 
 # Project Roads
-project_roads <- readRDS(file.path(project_file_path, "Data", "HDX Primary Roads", "FinalData", "r7_r8ab", "r7_r8ab_prj_rd.Rds")) 
+project_roads <- readRDS(file.path(project_file_path, 
+                                   "Data", "Project Roads","R7_R8ab", 
+                                   "FinalData","r7_r8ab.Rds")) 
 project_roads$one <- 1
 project_roads <- raster::aggregate(project_roads, by="one")
 
