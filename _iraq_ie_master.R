@@ -40,6 +40,5 @@ library(ggmap)
 library(gtools)
 library(leaflet)
 library(XML)
-source("https://raw.githubusercontent.com/ramarty/rgeos_chunks/master/R/rgeos_chunks.R")
 source("https://raw.githubusercontent.com/ramarty/fast-functions/master/R/functions_in_chunks.R")
 
