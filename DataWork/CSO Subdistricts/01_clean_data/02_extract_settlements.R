@@ -37,7 +37,7 @@ settlement_sf$uid <- df_poly$uid #extracting the unique id for sub-districts
 settlement_sf <- settlement_sf[!is.na(settlement_sf$uid),] #drop all obs in the row if uid is NA
 
 settlement_sf <- 
-  aggregate(no_of_settlements ~ uid,
+  aggregate(no_of_settlements ~ uid + year,
             data = settlement_sf,
             FUN = sum) #aggregating data
 

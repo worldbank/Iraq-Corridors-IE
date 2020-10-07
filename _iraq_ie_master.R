@@ -21,7 +21,7 @@ UTM_IRQ <- '+init=epsg:3394'
 N_CORES <- 2
 
 # Libraries --------------------------------------------------------------------
-
+library(sp)
 library(purrr)
 library(raster)
 library(readr)
@@ -54,10 +54,12 @@ library(mapsapi)
 library(leaflet)
 library(leaflet)
 library(XML)
+library(tmap)
 source("https://raw.githubusercontent.com/ramarty/rgeos_chunks/master/R/rgeos_chunks.R")
 source("https://raw.githubusercontent.com/ramarty/fast-functions/master/R/functions_in_chunks.R")
 
 #>>>>>>> 5a4136e344d0b198e51718a4151406e0b56b9130
+
 
 
 

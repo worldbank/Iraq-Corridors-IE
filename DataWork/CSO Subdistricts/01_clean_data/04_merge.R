@@ -12,10 +12,8 @@ time_invariant_data_names <- c("irq_adm_info.Rds",
                          "irq_market_access.Rds",
                          "irq_population.Rds",
                          "irq_road_length_km.Rds",
-                         "irq_dist_road_type.Rds",
-                         "irq_settlement.Rds")
+                         "irq_dist_road_type.Rds")
 
-#irq_viirs_monthly.Rds
 
 # Merge Time Invariant ---------------------------------------------------------
 #### Merge Data
@@ -49,6 +47,7 @@ viirs_df <- merge(viirs_df, data_time_invar_df, by = "uid")
 # Merge time variant data -------------------------------------------------
 conflict_df <- readRDS(file.path(INDIV_FILE_PATH, "irq_conflict.Rds"))
 hhexp_df <- readRDS(file.path(INDIV_FILE_PATH, "irq_hhexp.Rds"))
+settlement_df <- readRDS(file.path(INDIV_FILE_PATH,"irq_settlement.Rds"))
 
 
 #join time_variant data with VIIRS
@@ -58,9 +57,13 @@ viirs_df <- left_join(viirs_df,conflict_df@data
 viirs_df <- left_join(viirs_df,hhexp_df@data
                       , by = c("uid", "year"))
 
+viirs_df <- left_join(viirs_df,settlement_df@data
+                      , by = c("uid", "year"))
+
+
 #### Export
 saveRDS(viirs_df, file.path(project_file_path, "Data", "CSO Subdistricts", 
-                                       "FinalData", 
-                                       "subdistrict_data_df.Rds"))
+                            "FinalData", 
+                            "subdistrict_data_df.Rds"))
 
 

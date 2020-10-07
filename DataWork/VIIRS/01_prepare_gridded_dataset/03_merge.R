@@ -29,6 +29,7 @@ viirs_grid <- merge(viirs_grid, dist_project_roads, by="id")
 rm(dist_project_roads)
 gc()
 
+
 # Export -----------------------------------------------------------------------
 saveRDS(viirs_grid, file.path(project_file_path, "Data", "VIIRS", "FinalData", "iraq_viirs_grid_data.Rds"))
 
