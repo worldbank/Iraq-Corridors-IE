@@ -6,6 +6,7 @@
 #   1. near_major_roads: creates a grid that is 25km from a trunk road or 
 #      motorway (from OSM), 25km from the r78am, and 50km from the G-S road in 
 #      the north
+#   2. near_girsheen_suheila_road: 
 GRID_SAMPLE <- "near_major_roads"
 
 datawork_viirs <- file.path(github_file_path, "DataWork", "VIIRS")
