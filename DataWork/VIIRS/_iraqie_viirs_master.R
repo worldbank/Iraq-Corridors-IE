@@ -2,12 +2,18 @@
 # VIIRS Analysis Master Script
 
 #### Parameters
-# Grid sample is the sample of viirs grids. OPTIONS:
+# Grid sample is the sample of viirs grids. 
+# OPTIONS
 #   1. near_major_roads: creates a grid that is 25km from a trunk road or 
-#      motorway (from OSM), 25km from the r78am, and 50km from the G-S road in 
+#      motorway (from OSM), 25km from the r78am, or 50km from the G-S road in 
 #      the north
-#   2. near_girsheen_suheila_road: 
-GRID_SAMPLE <- "near_major_roads"
+#   2. near_girsheen_suheila_road: creates a grid with all cells with 100km 
+#      of the Girsheen Suheila_road road in the north, where cells are also 
+#      limited to those in Iraq
+#   3. near_r78ab_roads: creates a grid with all cells within 75km ofthe r78am
+#      road in the south, where cells are also limited to those in Iraq
+
+GRID_SAMPLE <- "near_girsheen_suheila_road"
 
 datawork_viirs <- file.path(github_file_path, "DataWork", "VIIRS")
 
