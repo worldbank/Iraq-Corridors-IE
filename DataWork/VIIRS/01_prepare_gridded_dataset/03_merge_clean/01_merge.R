@@ -30,7 +30,8 @@ rm(dist_project_roads)
 gc()
 
 # Export -----------------------------------------------------------------------
-saveRDS(viirs_grid, file.path(project_file_path, "Data", "VIIRS", "FinalData", "iraq_viirs_grid_data.Rds"))
+saveRDS(viirs_grid, file.path(project_file_path, "Data", "VIIRS", "FinalData", GRID_SAMPLE,
+                              "iraq_viirs_grid_data.Rds"))
 
 
 

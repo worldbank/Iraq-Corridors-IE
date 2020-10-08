@@ -2,7 +2,8 @@
 # Extract GADM
 
 # Load Data --------------------------------------------------------------------
-grid <- readRDS(file.path(project_file_path, "Data", "VIIRS", "FinalData","Separate Files Per Variable", "iraq_grid_blank.Rds"))
+grid <- readRDS(file.path(project_file_path, "Data", "VIIRS", "FinalData", GRID_SAMPLE,
+                          "Separate Files Per Variable", "iraq_grid_blank.Rds"))
 coordinates(grid) <- ~lon+lat
 crs(grid) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
 
@@ -52,6 +53,7 @@ ndvi_all_df <- bind_rows(
 
 # Export -----------------------------------------------------------------------
 saveRDS(ndvi_all_df, file=file.path(project_file_path, "Data", "VIIRS", "FinalData",
+                                    GRID_SAMPLE,
                                     "Separate Files Per Variable", 
                                     "iraq_grid_panel_ndvi.Rds"))
 

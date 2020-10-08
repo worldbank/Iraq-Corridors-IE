@@ -16,7 +16,7 @@
 #   6.3 Bank cross section (only id)
 
 # 0. Settings ------------------------------------------------------------------
-DIST_ROAD <- 30 # kilometer distance to primary road to be included in 
+DIST_ROAD <- 25 # kilometer distance to primary road to be included in 
 # analysis. If not within distance, cell dropped.
 
 # 1. Load Data -----------------------------------------------------------------
@@ -56,7 +56,7 @@ osm_roads    <- osm_roads    %>% spTransform(CRS("+init=epsg:4326"))
 # Larger buffer around road in the north
 osm_roads   <- gBuffer_chunks(osm_roads,     width=DIST_ROAD/111.12, 100)
 prj_rd_r78ab <- gBuffer_chunks(prj_rd_r78ab, width=DIST_ROAD/111.12, 100)
-prj_rd_gs    <- gBuffer_chunks(prj_rd_gs,    width=75/111.12, 100)
+prj_rd_gs    <- gBuffer_chunks(prj_rd_gs,    width=40/111.12, 100)
 
 ## Append
 roads <- list(osm_roads, prj_rd_r78ab, prj_rd_gs) %>% do.call(what = "rbind")
@@ -160,7 +160,7 @@ for(band_num in 1:max(iraq_grid_viirs$band)){
 }
 
 # Export -----------------------------------------------------------------------
-OUT_PATH <- file.path(project_file_path, "Data", "VIIRS", "FinalData", "Separate Files Per Variable")
+OUT_PATH <- file.path(project_file_path, "Data", "VIIRS", "FinalData", "near_major_roads", "Separate Files Per Variable")
 
 # 1. Panel with VIIRS
 iraq_grid_viirs_nolatlon <- subset(iraq_grid_viirs, select=-c(lat,lon,band))
