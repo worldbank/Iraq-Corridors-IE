@@ -7,16 +7,17 @@ datawork_viirs <- file.path(github_file_path, "DataWork", "VIIRS")
 prep_data_path <- file.path(datawork_viirs, "01_prepare_gridded_dataset")
 
 # Create grid
-source(file.path(prep_data_path, "01_create_viirs_grid.R"))
+source(file.path(prep_data_path, "01_prep_grids", "create_viirs_grid.R"))
 
 # Extract datasets to grid
-source(file.path(prep_data_path, "02_distance_project_roads.R"))
-source(file.path(prep_data_path, "02_distance_roads.R"))
-source(file.path(prep_data_path, "02_gadm.R"))
+source(file.path(prep_data_path, "02_extract_variables", "distance_osm_roads.R"))
+source(file.path(prep_data_path, "02_extract_variables", "distance_project_roads.R"))
+source(file.path(prep_data_path, "02_extract_variables", "gadm.R"))
+source(file.path(prep_data_path, "02_extract_variables", "ndvi.R"))
 
 # Merge and clean dataset
-source(file.path(prep_data_path, "03_merge.R"))
-source(file.path(prep_data_path, "04_clean_variables.R"))
+source(file.path(prep_data_path, "03_merge_clean", "merge.R"))
+source(file.path(prep_data_path, "03_merge_clean", "clean_variables.R"))
 
 # 2. Analysis ------------------------------------------------------------------
 
