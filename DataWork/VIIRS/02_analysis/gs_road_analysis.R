@@ -51,7 +51,8 @@ grid_annual <- grid %>%
   ungroup() %>%
   mutate(year = year %>% 
            factor() %>%
-           relevel(ref = "2016")) # year left out in regs
+           relevel(ref = "2016")) # year left out in regs. should be year before
+                                  # treatment. TODO when was road finished?
 
 #### Regressions
 felm(avg_rad_df ~ factor(year) | id | 0 | 0, data = grid_annual) %>%
