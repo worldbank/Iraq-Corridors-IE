@@ -10,9 +10,9 @@
 #   2. near_girsheen_suheila_road: creates a grid with all cells with 100km 
 #      of the Girsheen Suheila_road road in the north, where cells are also 
 #      limited to those in Iraq
-#   3. near_r78ab_roads: creates a grid with all cells within 75km ofthe r78am
+#   3. near_r78ab_roads: creates a grid with all cells within 30km ofthe r78am
 #      road in the south, where cells are also limited to those in Iraq
-GRID_SAMPLE <- "near_girsheen_suheila_road"
+GRID_SAMPLE <- "near_r78ab_roads"
 
 #### Scripts to Run
 RUN_CODE_CLEAN_DATA <- T
