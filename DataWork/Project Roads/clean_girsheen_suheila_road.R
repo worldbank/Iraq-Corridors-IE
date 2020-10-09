@@ -54,7 +54,7 @@ st_write(road_sdf %>% st_as_sf(), file.path(project_file_path, "Data", "Project 
                                             "Girsheen-Suheila Road", "FinalData",
                                             "gs_road_polyline.geojson"))
 
-writeRDS(road_sdf, file.path(project_file_path, "Data", "Project Roads", 
+saveRDS(road_sdf, file.path(project_file_path, "Data", "Project Roads", 
                              "Girsheen-Suheila Road", "FinalData",
                              "gs_road_polyline.Rds"))
 

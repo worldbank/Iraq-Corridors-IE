@@ -55,9 +55,14 @@ library(leaflet)
 library(leaflet)
 library(XML)
 library(tmap)
-source("https://raw.githubusercontent.com/ramarty/rgeos_chunks/master/R/rgeos_chunks.R")
-source("https://raw.githubusercontent.com/ramarty/fast-functions/master/R/functions_in_chunks.R")
+library(lubridate)
+library(hrbrthemes)
+library(tidyr)
+library(stringr)
+library(lfe)
 
+source("https://raw.githubusercontent.com/ramarty/fast-functions/master/R/functions_in_chunks.R")
+source("https://raw.githubusercontent.com/ramarty/rgeos_chunks/master/R/rgeos_chunks.R")
 #>>>>>>> 5a4136e344d0b198e51718a4151406e0b56b9130
 
 
