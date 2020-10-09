@@ -40,5 +40,6 @@ library(ggmap)
 library(gtools)
 library(leaflet)
 library(XML)
+library(lubridate)
 source("https://raw.githubusercontent.com/ramarty/fast-functions/master/R/functions_in_chunks.R")
 

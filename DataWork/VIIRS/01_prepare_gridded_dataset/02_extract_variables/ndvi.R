@@ -24,10 +24,12 @@ extract_ndvi <- function(band, year){
     mutate(year = year,
            month = band)
   
+  ndvi_df$id <- grid$id
+  
   return(ndvi_df)
 }
 
-## Extract for each year. Creates stacked dataframe of ndvi, year, month
+## Extract for each year. Creates stacked dataframe of ndvi, year, month, id
 ndvi_2012_df <- lapply(1:12, extract_ndvi, 2012)
 ndvi_2013_df <- lapply(1:12, extract_ndvi, 2013)
 ndvi_2014_df <- lapply(1:12, extract_ndvi, 2014)

@@ -1,37 +1,48 @@
 # Iraq IE
 # Distance to Roads
 
+IN_PATH <- file.path(project_file_path, "Data", "VIIRS", "FinalData",
+                     GRID_SAMPLE,
+                     "Separate Files Per Variable")
+
 # Load Data --------------------------------------------------------------------
-panel_viirs <- readRDS(file.path(project_file_path, "Data", "VIIRS", "FinalData",
-                                 "Separate Files Per Variable", 
-                                 "iraq_grid_panel_viirs.Rds")) %>% as.data.table
+panel_viirs <- readRDS(file.path(IN_PATH, "iraq_grid_panel_viirs.Rds")) %>% as.data.table
 
-# Merge ------------------------------------------------------------------------
-gadm <- readRDS(file.path(project_file_path, "Data", "VIIRS", "FinalData",
-                          "Separate Files Per Variable", 
-                          "iraq_grid_gadm.Rds")) %>% as.data.table
-viirs_grid <- merge(panel_viirs, gadm, by="id")
-rm(panel_viirs)
-rm(gadm)
-gc()
+# Merge Cross Section Data -----------------------------------------------------
+cross_section_data_names <- c("iraq_grid_dist_osm_roads.Rds",
+                              "iraq_grid_dist_projectroads.Rds",
+                              "iraq_grid_gadm.Rds")
 
-dist_primaryroads <- readRDS(file.path(project_file_path, "Data", "VIIRS", "FinalData",
-                                       "Separate Files Per Variable", 
-                                       "iraq_grid_dist_primaryroads.Rds")) %>% as.data.table
-viirs_grid <- merge(viirs_grid, dist_primaryroads, by="id")
-rm(dist_primaryroads)
-gc()
+for(data_name_i in cross_section_data_names){
+  print(data_name_i)
+  
+  data_i <- readRDS(file.path(IN_PATH, data_name_i)) %>% as.data.table
+  panel_viirs <- merge(panel_viirs, data_i, by="id")
+  
+  # Cleanup as memory intensive
+  rm(data_i)
+  gc()
+  
+}
 
-dist_project_roads <- readRDS(file.path(project_file_path, "Data", "VIIRS", "FinalData",
-                                        "Separate Files Per Variable", 
-                                        "iraq_grid_dist_projectroads.Rds")) %>% as.data.table
-viirs_grid <- merge(viirs_grid, dist_project_roads, by="id")
-rm(dist_project_roads)
-gc()
+# Merge Paenl Data -------------------------------------------------------------
+panel_data_names <- c("iraq_grid_panel_ndvi.Rds")
+
+for(data_name_i in panel_data_names){
+  print(data_name_i)
+  
+  data_i <- readRDS(file.path(IN_PATH, data_name_i)) %>% as.data.table
+  panel_viirs <- merge(panel_viirs, data_i, by=c("id", "month", "year"), all.x=T, all.y=F)
+  
+  # Cleanup as memory intensive
+  rm(data_i)
+  gc()
+  
+}
 
 # Export -----------------------------------------------------------------------
-saveRDS(viirs_grid, file.path(project_file_path, "Data", "VIIRS", "FinalData", GRID_SAMPLE,
-                              "iraq_viirs_grid_data.Rds"))
+saveRDS(panel_viirs, file.path(project_file_path, "Data", "VIIRS", "FinalData", GRID_SAMPLE,
+                              "viirs_grid.Rds"))
 
 
 
