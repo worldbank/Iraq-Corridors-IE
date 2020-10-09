@@ -1,10 +1,5 @@
 # Iraq IE
 
-# Create panel of VIIRs at grid level and blank datasets to be used when extracting
-# other variables to VIIRs level. Creates grid that uses pixels within DIST_ROAD km
-# of trunk roads and motorways from OSM and the R7/R8ab, and that is within 75km
-# of the g-s road in the north.
-
 # 1. Load Data
 # 2. Prep VIIRS Shapefile to limit cells in analysis
 # 3. Determine which cells in analysis (near highway and in country)
@@ -16,7 +11,7 @@
 #   6.3 Bank cross section (only id)
 
 # 0. Settings ------------------------------------------------------------------
-DIST_ROAD <- 25 # kilometer distance to primary road to be included in 
+DIST_ROAD <- 20 # kilometer distance to primary road to be included in 
 # analysis. If not within distance, cell dropped.
 
 # 1. Load Data -----------------------------------------------------------------
@@ -56,7 +51,7 @@ osm_roads    <- osm_roads    %>% spTransform(CRS("+init=epsg:4326"))
 # Larger buffer around road in the north
 osm_roads   <- gBuffer_chunks(osm_roads,     width=DIST_ROAD/111.12, 100)
 prj_rd_r78ab <- gBuffer_chunks(prj_rd_r78ab, width=DIST_ROAD/111.12, 100)
-prj_rd_gs    <- gBuffer_chunks(prj_rd_gs,    width=40/111.12, 100)
+prj_rd_gs    <- gBuffer_chunks(prj_rd_gs,    width=DIST_ROAD/111.12, 100)
 
 ## Append
 roads <- list(osm_roads, prj_rd_r78ab, prj_rd_gs) %>% do.call(what = "rbind")
