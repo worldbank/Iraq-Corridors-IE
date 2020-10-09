@@ -1,5 +1,9 @@
 # G-S Road Analysis
 
+# TODO
+# 1. We should probably cluster on something... but adm2 is too big
+# 2. When road finished? Update reference year.
+
 # Load Data --------------------------------------------------------------------
 grid <- readRDS(file.path(project_file_path, "Data", "VIIRS", "FinalData", 
                           "near_girsheen_suheila_road", "viirs_grid_clean.Rds")) %>%
@@ -44,6 +48,7 @@ grid %>%
 # Event Study ------------------------------------------------------------------
 #### Prep Data
 grid_annual <- grid %>%
+  # remove areas 0-1 km from road, as may just be picking up street or car lights
   filter(dist_gs_road_km > 1 & dist_gs_road_km < 5) %>%
   group_by(id, year, GADM_ID_2) %>%
   dplyr::summarise(avg_rad_df = mean(avg_rad_df),
