@@ -11,7 +11,7 @@
 #      limited to those in Iraq
 #   3. near_r78ab_roads: creates a grid with all cells within 30km ofthe r78am
 #      road in the south, where cells are also limited to those in Iraq
-GRID_SAMPLE <- "near_major_roads"
+GRID_SAMPLE <- "near_girsheen_suheila_road"
 
 #### Scripts to Run
 RUN_CODE_CLEAN_DATA <- T
