@@ -83,6 +83,9 @@ ntl_subdist_20km <-
   ntl_subdist[which(ntl_subdist$dist_r78_km <= 20),]
 
 ###FE with FELM
+reg <- lm(transformed_viirs_mean ~ roadimprovement + avg_hh_exp.mean + no_of_conflicts + pop_new + missing,
+          data = ntl_subdist_20km)
+
 reg1 <- lm(transformed_viirs_mean ~ roadimprovement + avg_hh_exp.mean + no_of_conflicts + pop_new + missing + factor(ADM3_EN) + factor(month),
            data = ntl_subdist_20km)
 
@@ -98,7 +101,8 @@ reg3 <- plm(transformed_viirs_mean ~ roadimprovement + avg_hh_exp.mean + no_of_c
             model = "within")
 
 ##Reg Output
-stargazer(reg1,
+stargazer(reg,
+          reg1,
           reg2,
           reg3,
           title = "Within a 20km Buffer",
@@ -106,7 +110,9 @@ stargazer(reg1,
           font.size = "small",
           digits = 3,
           omit.stat = c("ser"),
-          add.lines = list(c("Month and Sub-District FE", "Yes", "Yes", "Yes")),
-          out = file.path(project_file_path, "Tables" ,"Reg_NTLXMonthly_20km.tex"),
+          add.lines = list(c("Month and Sub-District FE","No", "Yes", "Yes", "Yes")),
+          #out = file.path(project_file_path, "Tables" ,"Reg_NTLXMonthly_20km.tex"),
           float = F,
-          header = F)
+          header = F, type = "text")
+
+hist(ntl_subdist_20km$pop_new)

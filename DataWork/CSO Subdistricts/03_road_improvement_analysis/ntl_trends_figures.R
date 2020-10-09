@@ -63,15 +63,17 @@ ntl_5km_10km_20km <- viirs_grid_5km %>%
            geom_line(color ="grey") +
            geom_line(color = "grey",data = viirs_grid_10km) +
            geom_line(color = "grey", data = viirs_grid_20km) +
-           geom_point(aes(color = viirs_mean.median), shape = 21, color = "black", fill = "#69b3a2", size = 3) +
-           geom_point(aes(color = viirs_mean.median), shape = 21, color = "black", fill = "blue", size = 3, data = viirs_grid_10km) +
-           geom_point(aes(color = viirs_mean.median),shape = 21, color = "black", fill = "red", size = 3, data = viirs_grid_20km) +
+           geom_point(aes(fill = "5km"), shape = 21, color = "black", size = 3) +
+           geom_point(aes(fill = "10km"), shape = 21, color = "black",  size = 3, data = viirs_grid_10km) +
+           geom_point(aes(fill = "20km"),shape = 21, color = "black", size = 3, data = viirs_grid_20km) +
            scale_color_discrete(name = "buffer")+
            theme_bw()+
            geom_vline(xintercept = 2016, linetype = "dotted", color = "black", size = 1.5)+
            ggtitle("Within a 5km,10km & 20km buffer of R7/R8") +
            labs(y = "Median Nighttime Lights",
-                x = "Year") 
+                x = "Year",
+                fill = "Buffer")
+          
            
 
 ntl_5km_10km_20km
