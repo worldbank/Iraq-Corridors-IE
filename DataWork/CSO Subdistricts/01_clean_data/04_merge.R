@@ -49,6 +49,7 @@ conflict_df <- readRDS(file.path(INDIV_FILE_PATH, "irq_conflict.Rds"))
 hhexp_df <- readRDS(file.path(INDIV_FILE_PATH, "irq_hhexp.Rds"))
 settlement_df <- readRDS(file.path(INDIV_FILE_PATH,"irq_settlement.Rds"))
 
+conflict_df@data
 
 #join time_variant data with VIIRS
 viirs_df <- left_join(viirs_df,conflict_df@data

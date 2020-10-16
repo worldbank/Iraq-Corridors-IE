@@ -1,23 +1,25 @@
 # Iraq IE
 # Distance to Primary Roads
 
+#GRID_SAMPLE <- "near_girsheen_suheila_road"
+GRID_SAMPLE <- "near_r78ab_roads"
+
 # Load Data --------------------------------------------------------------------
 # Grid
-grid <- readRDS(file.path(project_file_path, "Data", "VIIRS", "FinalData", GRID_SAMPLE, 
-                          "Separate Files Per Variable", "iraq_grid_blank.Rds"))
+grid <- readRDS(file.path(project_file_path, "Data", "VIIRS", "FinalData", 
+                          GRID_SAMPLE, "Separate Files Per Variable", 
+                          "iraq_grid_blank.Rds"))
 coordinates(grid) <- ~lon+lat
 crs(grid) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
 
 # Highways
-osm_roads <- readRDS(file.path(project_file_path, "Data", "OpenStreetMap", "FinalData", "iraq_roads_rds",
+osm_roads <- readRDS(file.path(project_file_path, "Data", "OpenStreetMap", 
+                               "FinalData", "iraq_roads_rds",
                                "gis_osm_roads_free_1.Rds"))
+
 osm_roads_trunk <- osm_roads[grepl("trunk", osm_roads$fclass),]
 osm_roads_motorway <- osm_roads[grepl("motorway", osm_roads$fclass),]
 
-# primary_routes <- readOGR(dsn=file.path(project_file_path, "Data", "HDX Primary Roads", "RawData"), 
-#                           layer="primary_routes")
-# primary_routes <- primary_routes[primary_routes$ROAD_RUNWA == "Hard /Paved",]
-# primary_routes$one <- 1
 
 # Reproject --------------------------------------------------------------------
 grid               <- spTransform(grid,               CRS(UTM_IRQ))

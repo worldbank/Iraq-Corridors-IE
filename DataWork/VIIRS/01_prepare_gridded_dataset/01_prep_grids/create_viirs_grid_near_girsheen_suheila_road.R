@@ -66,6 +66,8 @@ iraq <- gSimplify(iraq, tol = .01)
 ## Add Variable
 iraq$id <- 1
 
+
+
 # ** 3.2 Study Area Polygon ----------------------------------------------------
 # Mask roads to country to get study area: in both roads and country
 roads <- raster::intersect(roads, iraq)
@@ -73,17 +75,11 @@ roads <- raster::intersect(roads, iraq)
 # 4. Determine which cells are in Analysis -------------------------------------
 # Determine if cell should be in analysis: near a road and in the county.
 
-<<<<<<< HEAD:DataWork/VIIRS/01_prepare_gridded_dataset/01_create_viirs_grid.R
-
-# Quick-ish way to tell if intersects
-raster_OVER_country <- over_chunks(raster_temp_coords, iraq, "sum", 11000)
-
-raster_temp_coords <- spTransform(raster_temp_coords, CRS("+proj=longlat +datum=WGS84 +no_defs"))
-raster_OVER_roads <- over_chunks(raster_temp_coords, iraq_highways_buff, "sum", 11000)
-=======
 ## Create spatial points file from VIIRS
 r_tmp <- raster(file.path(project_file_path, "Data", "VIIRS", "RawData", "monthly", 
                           "iraq_viirs_raw_monthly_start_201204_avg_rad.tif"), band=1)
+
+
 r_tmp_coords <- coordinates(r_tmp) %>% as.data.frame
 coordinates(r_tmp_coords) <- ~x+y
 crs(r_tmp_coords) <- CRS("+init=epsg:4326")
@@ -91,7 +87,6 @@ r_tmp_coords$id <- 1:length(r_tmp_coords)
 
 ## Indicate whether intesects country/road
 r_OVER_roads   <- over_chunks(r_tmp_coords, roads, "sum", 10000)
->>>>>>> master:DataWork/VIIRS/01_prepare_gridded_dataset/01_prep_grids/create_viirs_grid_near_girsheen_suheila_road.R
 
 cell_in_analysis <- (r_OVER_roads$in_area %in% 1) 
 
@@ -136,6 +131,8 @@ iraq_grid_viirs <- data.frame(avg_rad_df=avg_rad_df,
                               band=band)
 # Add in coordinates
 iraq_grid_viirs <- merge(iraq_grid_viirs, viirs_coords_in_iraq, by="id")
+
+head(iraq_grid_viirs)
 
 # Add Month and Year -----------------------------------------------------------
 iraq_grid_viirs$month <- NA

@@ -5,6 +5,7 @@ ntl_subdist <- readRDS(file=file.path(project_file_path,
                                       "subdistrict_data_df_clean.Rds"))
 
 
+
 # Regressions (5km) -------------------------------------------------------------
 ##sub-districts within the 5km range
 ntl_subdist_5km <-
@@ -12,7 +13,7 @@ ntl_subdist_5km <-
 
 ###FE with PLM
 
-reg1 <- lm(transformed_viirs_mean ~ roadimprovement + no_of_conflicts + pop_new + avg_hh_exp.mean + missing + factor(ADM3_EN) + factor(month),
+reg1 <- lm(transformed_viirs_mean ~ roadimprovement + no_of_conflicts + pop_new + factor(ADM3_EN) + factor(month),
            data = ntl_subdist_5km)
 
 
@@ -21,7 +22,7 @@ reg2 <- plm(transformed_viirs_mean ~ roadimprovement,
             index = c("ADM3_EN", "viirs_time_id"), 
             model = "within")
 
-reg3 <- plm(transformed_viirs_mean ~ roadimprovement + no_of_conflicts + pop_new + avg_hh_exp.mean + missing, 
+reg3 <- plm(transformed_viirs_mean ~ roadimprovement + no_of_conflicts + pop_new, 
             data = ntl_subdist_5km, 
             index = c("ADM3_EN", "viirs_time_id"), 
             model = "within")
@@ -31,7 +32,7 @@ stargazer(reg1,
           reg2,
           reg3,
           title = "Within a 5km Buffer",
-          keep = c("roadimprovement","no_of_conflicts", "pop_new", "avg_hh_exp.mean"),
+          keep = c("roadimprovement","no_of_conflicts"),
           font.size = "small",
           digits = 3,
           omit.stat = c("ser"),
@@ -48,7 +49,7 @@ ntl_subdist_10km <-
   ntl_subdist[which(ntl_subdist$dist_r78_km <= 10),]
 
 ###FE with FELM
-reg1 <- lm(transformed_viirs_mean ~ roadimprovement + avg_hh_exp.mean + no_of_conflicts + pop_new + missing + factor(ADM3_EN) + factor(month),
+reg1 <- lm(transformed_viirs_mean ~ roadimprovement + no_of_conflicts + pop_new + factor(ADM3_EN) + factor(month),
            data = ntl_subdist_10km)
 
 
@@ -57,7 +58,7 @@ reg2 <- plm(transformed_viirs_mean ~ roadimprovement,
             index = c("ADM3_EN", "viirs_time_id"), 
             model = "within")
 
-reg3 <- plm(transformed_viirs_mean ~ roadimprovement + avg_hh_exp.mean + no_of_conflicts + pop_new + missing , 
+reg3 <- plm(transformed_viirs_mean ~ roadimprovement + no_of_conflicts + pop_new , 
             data = ntl_subdist_10km, 
             index = c("ADM3_EN", "viirs_time_id"), 
             model = "within")
@@ -67,7 +68,7 @@ stargazer(reg1,
           reg2,
           reg3,
           title = "Within a 10km Buffer",
-          keep = c("roadimprovement","no_of_conflicts","pop_new","average_hh_exp.mean"),
+          keep = c("roadimprovement","no_of_conflicts"),
           font.size = "small",
           digits = 3,
           omit.stat = c("ser"),
@@ -83,11 +84,8 @@ ntl_subdist_20km <-
   ntl_subdist[which(ntl_subdist$dist_r78_km <= 20),]
 
 ###FE with FELM
-reg <- lm(transformed_viirs_mean ~ roadimprovement + avg_hh_exp.mean + no_of_conflicts + pop_new + missing,
+reg1 <- lm(transformed_viirs_mean ~ roadimprovement + no_of_conflicts + pop_new + factor(ADM3_EN) + factor(month),
           data = ntl_subdist_20km)
-
-reg1 <- lm(transformed_viirs_mean ~ roadimprovement + avg_hh_exp.mean + no_of_conflicts + pop_new + missing + factor(ADM3_EN) + factor(month),
-           data = ntl_subdist_20km)
 
 
 reg2 <- plm(transformed_viirs_mean ~ roadimprovement, 
@@ -95,24 +93,41 @@ reg2 <- plm(transformed_viirs_mean ~ roadimprovement,
             index = c("ADM3_EN", "viirs_time_id"), 
             model = "within")
 
-reg3 <- plm(transformed_viirs_mean ~ roadimprovement + avg_hh_exp.mean + no_of_conflicts + pop_new + missing , 
+reg3 <- plm(transformed_viirs_mean ~ roadimprovement + no_of_conflicts + pop_new , 
             data = ntl_subdist_20km, 
             index = c("ADM3_EN", "viirs_time_id"), 
             model = "within")
 
 ##Reg Output
-stargazer(reg,
-          reg1,
+stargazer(reg1,
           reg2,
           reg3,
           title = "Within a 20km Buffer",
-          keep = c("roadimprovement","no_of_conflicts","no_of_settlements","pop_new", "average_hh_exp.mean"),
+          keep = c("roadimprovement","no_of_conflicts"),
           font.size = "small",
           digits = 3,
           omit.stat = c("ser"),
           add.lines = list(c("Month and Sub-District FE","No", "Yes", "Yes", "Yes")),
-          #out = file.path(project_file_path, "Tables" ,"Reg_NTLXMonthly_20km.tex"),
+          out = file.path(project_file_path, "Tables" ,"Reg_NTLXMonthly_20km.tex"),
           float = F,
-          header = F, type = "text")
+          header = F)
 
-hist(ntl_subdist_20km$pop_new)
+names(ntl_subdist)
+# Market access -----------------------------------------------------------
+ntl_subdist_20km <-
+  ntl_subdist[which(ntl_subdist$dist_r78_km <= 20),]
+
+reg1 <- lm(transformed_viirs_mean ~ MA_tt_theta3_8, 
+           data = ntl_subdist_20km)
+
+
+  stargazer(reg1,
+            title = "Within a 20km Buffer",
+           # keep = c("MA_tt_theta3_8"),
+            font.size = "small",
+            digits = 3,
+            omit.stat = c("ser"),
+            add.lines = list(c("Month and Sub-District FE","No", "Yes", "Yes", "Yes")),
+            #out = file.path(project_file_path, "Tables" ,"Reg_NTLXMonthly_20km.tex"),
+            float = F,
+            header = F, type = "text")
