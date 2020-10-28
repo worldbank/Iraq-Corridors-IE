@@ -85,7 +85,7 @@ coordinates(r_tmp_coords) <- ~x+y
 crs(r_tmp_coords) <- CRS("+init=epsg:4326")
 r_tmp_coords$id <- 1:length(r_tmp_coords)
 
-## Indicate whether intesects country/road
+## Indicate whether intersects country/road
 r_OVER_roads   <- over_chunks(r_tmp_coords, roads, "sum", 10000)
 
 cell_in_analysis <- (r_OVER_roads$in_area %in% 1) 

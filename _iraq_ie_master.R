@@ -60,6 +60,8 @@ library(hrbrthemes)
 library(tidyr)
 library(stringr)
 library(lfe)
+library(devtools)
+library(usethis)
 
 source("https://raw.githubusercontent.com/ramarty/fast-functions/master/R/functions_in_chunks.R")
 source("https://raw.githubusercontent.com/ramarty/rgeos_chunks/master/R/rgeos_chunks.R")

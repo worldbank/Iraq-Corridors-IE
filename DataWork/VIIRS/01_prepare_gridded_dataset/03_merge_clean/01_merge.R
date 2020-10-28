@@ -1,10 +1,10 @@
 # Iraq IE
 # Distance to Roads
-#GRID_SAMPLE <- "near_girsheen_suheila_road"
-GRID_SAMPLE <- "near_r78ab_roads"
+GRID_SAMPLE <- "near_girsheen_suheila_road"
+#GRID_SAMPLE <- "near_r78ab_roads"
 
 IN_PATH <- file.path(project_file_path, "Data", "VIIRS", "FinalData",
-                     "near_girsheen_suheila_road",
+                     GGRID_SAMPLE,
                      "Separate Files Per Variable")
 
 # Load Data --------------------------------------------------------------------
@@ -41,6 +41,7 @@ for(data_name_i in panel_data_names){
   gc()
   
 }
+
 
 # Export -----------------------------------------------------------------------
 saveRDS(panel_viirs, file.path(project_file_path, "Data", "VIIRS", "FinalData",GRID_SAMPLE,
