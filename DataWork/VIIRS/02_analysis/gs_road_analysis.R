@@ -81,10 +81,13 @@ grid %>%
 #drop NA GADM
 grid <-grid[!is.na(grid$GADM_ID_2),]
 
+#add liberation and interaction var
+grid$liberation <- ifelse(grid$year_month > "2017-06-01",1,0)
+
 grid_annual_5km <- grid %>%
   # remove areas 0-1 km from road, as may just be picking up street or car lights
   filter(dist_gs_road_km > 1 & dist_gs_road_km < 5) %>%
-  group_by(id, year, GADM_ID_2,year_month) %>%
+  group_by(id, year, GADM_ID_2,year_month,liberation) %>%
   dplyr::summarise(avg_rad_df = mean(avg_rad_df),
                    ndvi = mean(ndvi)) %>%
   ungroup() %>%
@@ -94,18 +97,15 @@ grid_annual_5km <- grid %>%
                                   # treatment. 
 grid_annual_5km$log_avg_rad_df <- log(grid_annual_5km$avg_rad_df + sqrt((grid_annual_5km$avg_rad_df)^2+1))
 
-#### Regressions
-reg1 <- felm(avg_rad_df ~ factor(year) | id | 0 | 0, data = grid_annual_5km)
-reg2 <- felm(avg_rad_df ~ factor(year) + ndvi | id | 0 | 0, data = grid_annual_5km)
 
-reg3 <- felm(log_avg_rad_df ~ factor(year) | id | 0 | 0, data = grid_annual_5km)
-reg4 <- felm(log_avg_rad_df ~ factor(year) + ndvi | id | 0 | 0, data = grid_annual_5km)
+
+#### Regressions
+reg1 <- felm(log_avg_rad_df ~ factor(year) | id | 0 | 0, data = grid_annual_5km)
+reg2 <- felm(log_avg_rad_df ~ factor(year) + ndvi + liberation | id | 0 | 0, data = grid_annual_5km)
 
 
 stargazer(reg1,
           reg2,
-          reg3,
-          reg4,
           title = "Within a 5km Buffer",
           font.size = "small",
           digits = 3,
@@ -120,7 +120,7 @@ stargazer(reg1,
 grid_annual_10km <- grid %>%
   # remove areas 0-1 km from road, as may just be picking up street or car lights
   filter(dist_gs_road_km > 1 & dist_gs_road_km <= 10 ) %>%
-  group_by(id, year, GADM_ID_2,year_month) %>%
+  group_by(id, year, GADM_ID_2,year_month,liberation) %>%
   dplyr::summarise(avg_rad_df = mean(avg_rad_df),
                    ndvi = mean(ndvi)) %>%
   ungroup() %>%
@@ -131,30 +131,25 @@ grid_annual_10km <- grid %>%
 grid_annual_10km$log_avg_rad_df <- log(grid_annual_10km$avg_rad_df + sqrt((grid_annual_10km$avg_rad_df)^2+1))
 
 #### Regressions
-reg1 <- felm(avg_rad_df ~ factor(year) | id | 0 | 0, data = grid_annual_10km)
-reg2 <- felm(avg_rad_df ~ factor(year) + ndvi | id | 0 | 0, data = grid_annual_10km)
-
-reg3 <- felm(log_avg_rad_df ~ factor(year) | id | 0 | 0, data = grid_annual_10km)
-reg4 <- felm(log_avg_rad_df ~ factor(year) + ndvi | id | 0 | 0, data = grid_annual_10km)
+reg1 <- felm(log_avg_rad_df ~ factor(year) | id | 0 | 0, data = grid_annual_10km)
+reg2 <- felm(log_avg_rad_df ~ factor(year) + ndvi +liberation | id | 0 | 0, data = grid_annual_10km)
 
 
 stargazer(reg1,
           reg2,
-          reg3,
-          reg4,
           title = "Within a 10km Buffer",
           font.size = "small",
           digits = 3,
           omit.stat = c("ser"),
           out = file.path(project_file_path,"Tables","gs_EventStudy_10km.tex"),
           float = F,
-          header = F)
+          header = F, type = "text")
 
 # 20km --------------------------------------------------------------------
 grid_annual_20km <- grid %>%
   # remove areas 0-1 km from road, as may just be picking up street or car lights
   filter(dist_gs_road_km > 1 & dist_gs_road_km <= 20 ) %>%
-  group_by(id, year, GADM_ID_2,year_month) %>%
+  group_by(id, year, GADM_ID_2,year_month, liberation) %>%
   dplyr::summarise(avg_rad_df = mean(avg_rad_df),
                    ndvi = mean(ndvi)) %>%
   ungroup() %>%
@@ -165,34 +160,29 @@ grid_annual_20km <- grid %>%
 grid_annual_20km$log_avg_rad_df <- log(grid_annual_20km$avg_rad_df + sqrt((grid_annual_20km$avg_rad_df)^2+1))
 
 #### Regressions
-reg1 <- felm(avg_rad_df ~ factor(year) | id | 0 | 0, data = grid_annual_20km)
-reg2 <- felm(avg_rad_df ~ factor(year) + ndvi | id | 0 | 0, data = grid_annual_20km)
+reg1 <- felm(log_avg_rad_df ~ factor(year) | id | 0 | 0, data = grid_annual_20km)
+reg2 <- felm(log_avg_rad_df ~ factor(year) + ndvi + liberation | id | 0 | 0, data = grid_annual_20km)
 
-reg3 <- felm(log_avg_rad_df ~ factor(year) | id | 0 | 0, data = grid_annual_20km)
-reg4 <- felm(log_avg_rad_df ~ factor(year) + ndvi | id | 0 | 0, data = grid_annual_20km)
+
 
 
 stargazer(reg1,
           reg2,
-          reg3,
-          reg4,
           title = "Within a 20km Buffer",
           font.size = "small",
           digits = 3,
           omit.stat = c("ser"),
           out = file.path(project_file_path,"Tables","gs_EventStudy_20km.tex"),
           float = F,
-          header = F)
+          header = F, type ="text")
 
 
 
 
 # Prepare Data  ----------------------------------------------------
-grid$road_improvement <- ifelse(grid$year > 2019,1,0)
-
 grid_monthly_subdist <- grid %>%
   filter(dist_gs_road_km > 1 & dist_gs_road_km <= 20) %>%
-  group_by(id, year,month, GADM_ID_2,dist_gs_road_km,road_improvement,year_month) %>%
+  group_by(id, year,month, GADM_ID_2,dist_gs_road_km,year_month) %>%
   dplyr::summarise(avg_rad_df = mean(avg_rad_df),
                    ndvi = mean(ndvi))%>%
   ungroup()
@@ -205,18 +195,25 @@ grid_monthly_subdist$transformed_avg_rad_df <-
 #drop NA GADM
 grid_monthly_subdist <-grid_monthly_subdist[!is.na(grid_monthly_subdist$GADM_ID_2),] #check why they are empty
 
+grid_monthly_subdist$road_improvement <- ifelse(grid_monthly_subdist$year > 2019,1,0)
+
 #Add a simple log variable
 grid_monthly_subdist$log_avg_rad_df <- log(grid_monthly_subdist$avg_rad_df + 1)
+
+#add liberation and interaction var
+grid_monthly_subdist$liberation <- ifelse(grid_monthly_subdist$year_month > "2017-06-01",1,0)
+
+grid_monthly_subdist$roadimprovement_liberation <- grid_monthly_subdist$road_improvement*grid_monthly_subdist$liberation
 
 # Regression(5km) ---------------------------------------------------------
 grid_5km <- grid_monthly_subdist %>%
   filter(dist_gs_road_km > 1 & dist_gs_road_km <= 5)
 
 
-reg1 <- lm(transformed_avg_rad_df ~ road_improvement + ndvi,
+reg1 <- lm(transformed_avg_rad_df ~ road_improvement + ndvi + factor(month),
            data = grid_5km)
 
-reg2 <- lm(transformed_avg_rad_df ~ road_improvement + ndvi + factor(month),
+reg2 <- lm(transformed_avg_rad_df ~ road_improvement + ndvi + roadimprovement_liberation + factor(month),
            data = grid_5km)
 
 reg3 <- plm(transformed_avg_rad_df ~ road_improvement + ndvi, 
@@ -224,16 +221,22 @@ reg3 <- plm(transformed_avg_rad_df ~ road_improvement + ndvi,
             index = c("id", "year_month"), 
             model = "within")
 
+reg4 <- plm(transformed_avg_rad_df ~ road_improvement + ndvi + roadimprovement_liberation, 
+            data = grid_5km, 
+            index = c("id", "year_month"), 
+            model = "within")
+
 stargazer(reg1,
           reg2,
           reg3,
+          reg4,
           title = "Within a 5km Buffer",
-          keep = c("road_improvement","ndvi"),
+          keep = c("road_improvement","ndvi","roadimprovement_liberation"),
           font.size = "small",
           digits = 3,
           omit.stat = c("ser"),
-          add.lines = list(c("Month and Pixel FE","No", "Month - Yes/Pixel - No", "Yes")),
-          out = file.path(project_file_path,"Tables","GS_PixelXMonthly_5km.tex"),
+          add.lines = list(c("Month and Pixel FE", "Yes","Yes","Yes","Yes")),
+          #out = file.path(project_file_path,"Tables","GS_PixelXMonthly_5km.tex"),
           float = F,
           header = F, type = "text")
 

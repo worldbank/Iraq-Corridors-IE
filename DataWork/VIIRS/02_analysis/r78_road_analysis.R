@@ -16,6 +16,13 @@ viirs_grid$transformed_avg_rad_df <-
 #add treatment var
 viirs_grid$road_improvement <- ifelse(viirs_grid$year > 2015,1,0)
 
+#add conflict var
+viirs_grid$liberation <- ifelse(viirs_grid$year_month > "2017-06-01",1,0)
+
+##add interaction variable
+viirs_grid$roadimprovement_liberation <- viirs_grid$road_improvement*viirs_grid$liberation
+
+
 ##Change the road improvement time period from 2016 to 2013 onward. 
 ##Ideally, NTL should have little to no effect during this time period
 viirs_grid$placebo_road_improvement <- ifelse(viirs_grid$year > 2012, 1,0)
@@ -29,8 +36,16 @@ viirs_grid_5km <-
 reg1 <- lm(transformed_avg_rad_df ~ road_improvement + ndvi,
            data = viirs_grid_5km)
 
-reg2 <- plm(transformed_avg_rad_df ~ road_improvement + ndvi,
+reg2 <- lm(transformed_avg_rad_df ~ road_improvement + ndvi + roadimprovement_liberation,
+           data = viirs_grid_5km)
+
+reg3 <- plm(transformed_avg_rad_df ~ road_improvement + ndvi,
                data = viirs_grid_5km, 
+            index = c("id", "year_month"), 
+            model = "within")
+
+reg4 <- plm(transformed_avg_rad_df ~ road_improvement + ndvi + roadimprovement_liberation,
+            data = viirs_grid_5km, 
             index = c("id", "year_month"), 
             model = "within")
 
@@ -38,15 +53,17 @@ reg2 <- plm(transformed_avg_rad_df ~ road_improvement + ndvi,
 ##Reg Output
 stargazer(reg1,
           reg2,
-          keep = c("transformed_avg_rad_df","road_improvement", "ndvi"),
+          reg3,
+          reg4,
+          keep = c("transformed_avg_rad_df","road_improvement", "ndvi","roadimprovement_liberation"),
           title = "Within a 5km Buffer",
           font.size = "small",
           digits = 2,
           omit.stat = c("ser"),
           add.lines = list(c("Month and Pixel FE", "No","Yes")),
-          out = file.path(project_file_path,"Tables","Reg_PixelXMonthly_5km.tex"),
+          out = file.path(project_file_path,"Tables","Reg_PixelXMonthlyXLiberation_5km.tex"),
           float = F,
-          header = F,type = "text")
+          header = F)
 
 rm(reg1,reg2)
 
@@ -55,27 +72,38 @@ rm(reg1,reg2)
 viirs_grid_10km <-
   viirs_grid[which(viirs_grid$dist_r78ab_road_km <=10),]
 
-###FE with PLM
+#FE
 reg1 <- lm(transformed_avg_rad_df ~ road_improvement + ndvi,
            data = viirs_grid_10km)
 
-reg2 <- plm(transformed_avg_rad_df ~ road_improvement + ndvi,
+reg2 <- lm(transformed_avg_rad_df ~ road_improvement + ndvi + roadimprovement_liberation,
+           data = viirs_grid_10km)
+
+reg3 <- plm(transformed_avg_rad_df ~ road_improvement + ndvi,
             data = viirs_grid_10km, 
             index = c("id", "year_month"), 
             model = "within")
 
+reg4 <- plm(transformed_avg_rad_df ~ road_improvement + ndvi + roadimprovement_liberation,
+            data = viirs_grid_10km, 
+            index = c("id", "year_month"), 
+            model = "within")
+
+
 ##Reg Output
 stargazer(reg1,
           reg2,
-          keep = c("road_improvement", "ndvi"),
+          reg3,
+          reg4,
+          keep = c("transformed_avg_rad_df","road_improvement", "ndvi","roadimprovement_liberation"),
           title = "Within a 10km Buffer",
           font.size = "small",
           digits = 2,
           omit.stat = c("ser"),
-          add.lines = list(c("Month and Pixel FE", "No", "Yes")),
-          out = file.path(project_file_path,"Tables","Reg_PixelXMonthly_10km.tex"),
+          add.lines = list(c("Month and Pixel FE", "No","Yes")),
+          out = file.path(project_file_path,"Tables","Reg_PixelXMonthlyXLiberation_10km.tex"),
           float = F,
-          header = F, type = "text")
+          header = F)
 
 rm(reg1,reg2)
 
@@ -88,23 +116,34 @@ viirs_grid_20km <-
 reg1 <- lm(transformed_avg_rad_df ~ road_improvement + ndvi,
            data = viirs_grid_20km)
 
-reg2 <- plm(transformed_avg_rad_df ~ road_improvement + ndvi,
+reg2 <- lm(transformed_avg_rad_df ~ road_improvement + ndvi + roadimprovement_liberation,
+           data = viirs_grid_20km)
+
+reg3 <- plm(transformed_avg_rad_df ~ road_improvement + ndvi,
             data = viirs_grid_20km, 
             index = c("id", "year_month"), 
             model = "within")
 
+reg4 <- plm(transformed_avg_rad_df ~ road_improvement + ndvi + roadimprovement_liberation,
+            data = viirs_grid_20km, 
+            index = c("id", "year_month"), 
+            model = "within")
+
+
 ##Reg Output
 stargazer(reg1,
           reg2,
-          keep = c("road_improvement", "ndvi"),
+          reg3,
+          reg4,
+          keep = c("transformed_avg_rad_df","road_improvement", "ndvi","roadimprovement_liberation"),
           title = "Within a 20km Buffer",
           font.size = "small",
           digits = 2,
           omit.stat = c("ser"),
-          add.lines = list(c("Month and Pixel FE", "No", "Yes")),
-          out = file.path(project_file_path,"Tables","Reg_PixelXMonthly_20km.tex"),
+          add.lines = list(c("Month and Pixel FE", "No","Yes")),
+          out = file.path(project_file_path,"Tables","Reg_PixelXMonthlyXLiberation_20km.tex"),
           float = F,
-          header = F, type = "text")
+          header = F)
 
 
 # Robustness Checks -------------------------------------------------------

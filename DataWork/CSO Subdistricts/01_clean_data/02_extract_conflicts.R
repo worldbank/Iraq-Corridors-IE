@@ -91,34 +91,4 @@ saveRDS(iraq_adm3, file.path(project_file_path,
 
 
 
-# Figure  -----------------------------------------------------------------
-# For buffers 5, 10 20 km
-grid_buffer_stack <- grid %>%
-  group_by(year) %>%
-  dplyr::summarise("avg_rad_5" = mean(avg_rad_df[dist_gs_road_km > 0 & dist_gs_road_km <= 5]),
-                   "avg_rad_10" = mean(avg_rad_df[dist_gs_road_km > 0 & dist_gs_road_km <= 10]),
-                   "avg_rad_20" = mean(avg_rad_df[dist_gs_road_km > 0 & dist_gs_road_km <= 20])) %>%
-  pivot_longer(cols = -year) %>%
-  mutate(name = name %>% 
-           str_replace_all("avg_rad_", "")) %>%
-  dplyr::rename(buffer = name)
-
-gs_ntl <- grid_buffer_stack %>%
-  ggplot(aes(x = year, 
-             y = value,
-             group = buffer,
-             color = buffer),
-         size = 1) +
-  geom_line(size=1) +
-  labs(color = "Buffer (km)",
-       title = "Average NTL Radiance near\nGirsheen Suheila Road",
-       x = "", 
-       y = "Average\nRadiance") +
-  theme_minimal() + 
-  scale_colour_brewer(palette = "Dark2")
-
-ggplot()+
-  geom_polygon(data = iraq_adm3, aes(x = long, y= lat, group = group), fill = "white", color = "black")+
-  geom_point(data = gtd_df, aes(x = lon, y = lat))+
-  theme_void()
-
+  
