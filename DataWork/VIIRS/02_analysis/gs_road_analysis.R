@@ -299,3 +299,23 @@ stargazer(reg1,
           out = file.path(project_file_path,"Tables","GS_PixelXMonthly_20km.tex"),
           float = F,
           header = F, type="text")
+
+
+# Summary of all buffers(table) -------------------------------------------
+reg_5km <- felm(log_avg_rad_df ~ factor(year) + ndvi + liberation | id | 0 | 0, data = grid_annual_5km)
+reg_10km <- felm(log_avg_rad_df ~ factor(year) + ndvi +liberation | id | 0 | 0, data = grid_annual_10km)
+reg_20km <- felm(log_avg_rad_df ~ factor(year) + ndvi + liberation | id | 0 | 0, data = grid_annual_20km)
+
+stargazer(reg_5km,
+          reg_10km,
+          reg_20km,
+          font.size = "small",
+          digits = 3,
+          omit.stat = c("ser"),
+          add.lines = list(c("Month and Pixel FE","Yes", "Yes", "Yes")),
+          out = file.path(project_file_path,"Tables","GS_PixelXannual_all.tex"),
+          float = F,
+          header = F)
+
+plot_summs(reg_5km, reg_10km, reg_20km,inner_ci_level = .9,
+           model.names = c("5km", "10km", "20km"), scale = TRUE)

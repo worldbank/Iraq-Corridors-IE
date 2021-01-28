@@ -15,7 +15,6 @@ ntl_subdist$liberation <- ifelse(ntl_subdist$year_month > "2017-06-01",1,0)
 ntl_subdist$roadimprovement_liberation <- ntl_subdist$roadimprovement*ntl_subdist$liberation
 
 
-
 # Regressions (5km) -------------------------------------------------------------
 ##sub-districts within the 5km range
 ntl_subdist_5km <-
@@ -39,7 +38,6 @@ reg4 <-  plm(transformed_viirs_mean ~ roadimprovement + no_of_conflicts + pop_ne
              data = ntl_subdist_5km, 
              index = c("ADM3_EN", "viirs_time_id"), 
              model = "within")
-
 ##Reg Output
 stargazer(reg1,
           reg2,
@@ -151,3 +149,44 @@ reg1 <- lm(transformed_viirs_mean ~ MA_tt_theta3_8,
             #out = file.path(project_file_path, "Tables" ,"Reg_NTLXMonthly_20km.tex"),
             float = F,
             header = F, type = "text")
+
+
+# Summary Statistics ------------------------------------------------------
+#subset data
+vars <- c("transformed_viirs_mean","area_km2","distance_to_baghdad","no_of_conflicts","population","no_of_settlements", "uid")
+ntl_subdist_20km_subset <- ntl_subdist_20km[vars]
+
+ntl_subdist_20km_subset <- aggregate(transformed_viirs_mean ~ uid + area_km2 + distance_to_baghdad + population,
+                                     data = ntl_subdist_20km_subset, 
+                                     FUN = mean)
+ntl_subdist_20km_subset <- ntl_subdist_20km_subset[,2:5]
+stargazer(ntl_subdist_20km_subset,
+          out = file.path(project_file_path, "Tables" ,"summarystats.tex"), 
+          float = F)
+
+
+# Graphing coefficient estimates ------------------------------------------
+reg_5km <- plm(transformed_viirs_mean ~ roadimprovement + no_of_conflicts + pop_new + roadimprovement_liberation, 
+               data = ntl_subdist_5km, 
+               index = c("ADM3_EN", "viirs_time_id"), 
+               model = "within")
+reg_10km <- plm(transformed_viirs_mean ~ roadimprovement + no_of_conflicts + pop_new + roadimprovement_liberation, 
+                data = ntl_subdist_10km, 
+                index = c("ADM3_EN", "viirs_time_id"), 
+                model = "within")
+reg_20km <- plm(transformed_viirs_mean ~ roadimprovement + no_of_conflicts + pop_new + roadimprovement_liberation, 
+                data = ntl_subdist_20km, 
+                index = c("ADM3_EN", "viirs_time_id"), 
+                model = "within")
+
+plot_summs(reg_5km, reg_10km, reg_20km,inner_ci_level = .9,
+           model.names = c("5km", "10km", "20km"))
+
+stargazer(reg_5km, reg_10km,reg_20km,
+          font.size = "small",
+          digits = 3,
+          omit.stat = c("ser"),
+          add.lines = list(c("Month and Sub-District FE","Yes", "Yes", "Yes")),
+          out = file.path(project_file_path, "Tables" ,"Reg_NTLXMonthly_all.tex"),
+          float = F,
+          header = F)

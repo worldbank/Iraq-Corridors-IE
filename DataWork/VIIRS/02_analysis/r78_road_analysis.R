@@ -146,6 +146,34 @@ stargazer(reg1,
           header = F)
 
 
+# Graphing coefficient estimates ------------------------------------------
+
+reg_5km <- plm(transformed_avg_rad_df ~ road_improvement + ndvi + roadimprovement_liberation,
+               data = viirs_grid_5km, 
+               index = c("id", "year_month"), 
+               model = "within")
+reg_10km <- plm(transformed_avg_rad_df ~ road_improvement + ndvi + roadimprovement_liberation,
+                data = viirs_grid_10km, 
+                index = c("id", "year_month"), 
+                model = "within")
+
+reg_20km <- plm(transformed_avg_rad_df ~ road_improvement + ndvi + roadimprovement_liberation,
+                data = viirs_grid_20km, 
+                index = c("id", "year_month"), 
+                model = "within")
+
+plot_summs(reg_5km, reg_10km, reg_20km,inner_ci_level = .9,
+           model.names = c("5km", "10km", "20km"), scale = TRUE)
+
+stargazer(reg_5km, reg_10km,reg_20km,
+          font.size = "small",
+          digits = 3,
+          omit.stat = c("ser"),
+          add.lines = list(c("Month and Sub-District FE","Yes", "Yes", "Yes")),
+          out = file.path(project_file_path, "Tables" ,"Reg_NTLXPixel_all.tex"),
+          float = F,
+          header = F)
+
 # Robustness Checks -------------------------------------------------------
 ###FE with PLM
 reg1 <- lm(transformed_avg_rad_df ~ placebo_road_improvement + ndvi,

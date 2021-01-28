@@ -1,18 +1,9 @@
 #Figures for Geo4Dev
 
 
-# Loading Data ------------------------------------------------------------
-population <- readRDS(file.path(project_file_path, 
-                                "Data", "CSO Subdistricts", "FinalData",  
-                                "individual_files","irq_population.Rds"))
-
-viirs <- readRDS(file.path(project_file_path, 
-                           "Data", "CSO Subdistricts", "FinalData",  
-                           "individual_files",
-                           "irq_viirs_monthly.Rds"))
-
+# Loading Data 
 # Figure ------------------------------------------------------------------
-options(scipen = 999)
+
 
 #Plotting population
 ggplot()+
@@ -43,10 +34,15 @@ viirs_2015 <- viirs_2015 %>%
                 log_viirs = log1p(viirs_mean))
 
 #Figure
-ggscatter(viirs_2015, x = "log_pop", y = "log_viirs", 
-          add = "reg.line", conf.int = TRUE, 
-          cor.coef = TRUE, cor.method = "pearson",
-          xlab = "Log (Population) in 2015", ylab = "Log(NTL) in 2015 ")
+ggscatter(viirs_2015, x = "log_viirs" , y = "log_pop", 
+          color = "black", shape = 21, size = 3, # Points color, shape and size
+          add = "reg.line",  # Add regressin line
+          cor.method = "pearson",
+          add.params = list(color = "blue", fill = "lightgray"), # Customize reg. line
+          conf.int = TRUE, # Add confidence interval
+          cor.coef = TRUE, # Add correlation coefficient. see ?stat_cor
+          cor.coeff.args = list(method = "pearson", label.x = 3, label.sep = "\n",
+          xlab = "Log(NTL) in 2015 ", ylab = "Log (Population) in 2015"))
 
 
 
@@ -85,11 +81,19 @@ ggplot()+
   theme_minimal()
 
 
+
 #Create buffer around GS
 gs_5km <- gBuffer(gs_road, width=5/111.12, byid = T)
-gs_10km <- gBuffer(gs_road, width=10/111.12, byid = T)
-gs_20km <- gBuffer(gs_road, width=20/111.12, byid = T)
+gs_5km <- st_as_sf(gs_5km)
+gs_5km_cropped <- st_intersection(iraq_cropped, gs_5km)
 
+gs_10km <- gBuffer(gs_road, width=10/111.12, byid = T)
+gs_10km <- st_as_sf(gs_10km)
+gs_10km_cropped <- st_intersection(iraq_cropped, gs_10km_cropped)
+
+gs_20km <- gBuffer(gs_road, width=20/111.12, byid = T)
+gs_20km <- st_as_sf(gs_20km)
+gs_20km_cropped <- st_intersection(iraq_cropped,gs_20km)
 
 #Figure
 
@@ -97,11 +101,11 @@ library(wesanderson)
 
 ggplot()+
   geom_sf(data = iraq_cropped, fill = NA, color = "gray")+
-  geom_polygon(data = gs_20km, aes(x = long, y = lat, group = group, fill = "20km"),alpha = 0.25)+
-  geom_polygon(data = gs_10km, aes(x = long, y = lat, group = group, fill = "10km"),alpha = 0.25 , color = "grey20")+
-  geom_polygon(data = gs_5km, aes(x = long, y = lat, group = group, fill = "5km"),alpha = 0.25, color = "grey20")+
+  geom_sf(data = gs_20km_cropped, aes(fill = "20km"),alpha = 0.25, color = "gray40")+
+  geom_sf(data = gs_10km_cropped, aes(fill = "10km"),alpha = 0.25 , color = "gray40")+
+  geom_sf(data = gs_5km_cropped, aes(fill = "5km"),alpha = 0.25, color = "gray40")+
   geom_path(data = gs_road_tidy,aes(x = long, y = lat, group = group, color = "Project Road \nGirsheen-Suheila"))+
-  annotate("text", x=42.65, y= 36.9, label= "Dahuk", size = 3, color = "grey20")+
+  annotate("text", x=42.65, y= 36.9, label= "Duhok", size = 3, color = "grey20")+
   annotate("text", x=42.6, y= 36.8, label= "Mosul", size = 3, color = "grey20")+
   coord_sf()+
   labs(color = "", fill = "Buffer")+
