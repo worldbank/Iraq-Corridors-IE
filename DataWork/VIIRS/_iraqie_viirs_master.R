@@ -36,6 +36,7 @@ if(RUN_CODE_CLEAN_DATA){
   source(file.path(prep_data_path, "02_extract_variables", "distance_osm_roads.R"))
   source(file.path(prep_data_path, "02_extract_variables", "distance_project_roads.R"))
   source(file.path(prep_data_path, "02_extract_variables", "ndvi.R"))
+  source(file.path(prep_data_path, "02_extract_variables", "distance_cities.R"))
   
   #### Merge and clean dataset
   source(file.path(prep_data_path, "03_merge_clean", "01_merge.R"))
