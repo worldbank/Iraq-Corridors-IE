@@ -11,6 +11,8 @@ if(Sys.info()[["user"]] == "robmarty") github_file_path <- "~/Documents/Github/I
 if(Sys.info()[["user"]] == "chitr") project_file_path <- "C:/Users/chitr/Dropbox/Iraq IE"
 if(Sys.info()[["user"]] == "chitr") github_file_path <- "C:/Users/chitr/Documents/GitHub/Iraq-Corridors-IE"
 
+data_file_path <- file.path(project_file_path, "Data")
+
 # Global Parameters ------------------------------------------------------------
 UTM_IRQ <- '+init=epsg:3394'
 N_CORES <- 2
