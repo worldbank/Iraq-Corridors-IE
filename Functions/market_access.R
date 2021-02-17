@@ -108,18 +108,28 @@ calc_ma_from_tt <- function(tt_df,
                             travel_cost_var,
                             theta,
                             exclude_km){
+  # DESCRIPTION: Using a travel cost matrix that includes market size (eg, population),
+  # computes market access.
+  # ARGS:
+  #  tt_df: Travel time matrix dataframe
+  #  orig_uid_var: Name of origin uid variable
+  #  market_var: Name of variable to use as market size
+  #  travel_cost_var: Name of variable to use as travel cost
+  #  theta: Cost parameter (theta)
+  #  exclude_km: When calculating market access, exclude units within this distance
   
   ## Prep Variables
   tt_df$orig_uid    <- tt_df[[orig_uid_var]]
   tt_df$market_var  <- tt_df[[market_var]]
   tt_df$travel_cost <- tt_df[[travel_cost_var]]
   
-  ## Computer Market Access
+  ## Compute Market Access
   MA_df <- tt_df[tt_df$distance_meters > exclude_km*1000,] %>% 
     group_by(orig_uid) %>%
     summarise(MA_VAR  = sum(market_var / (travel_cost^theta)))
   
   ## Names for variable name
+  travel_cost_name <- ""
   if(travel_cost_var %in% "travel_time") travel_cost_name <- "tt"
   if(grepl("distance", travel_cost_var)) travel_cost_name <- "dist"
   theta_name <- theta %>% as.character %>% str_replace_all("\\.", "_")
@@ -136,3 +146,6 @@ calc_ma_from_tt <- function(tt_df,
   
   return(MA_df)
 }
+
+
+
