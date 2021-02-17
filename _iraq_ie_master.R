@@ -11,7 +11,12 @@ if(Sys.info()[["user"]] == "robmarty") github_file_path <- "~/Documents/Github/I
 if(Sys.info()[["user"]] == "chitr") project_file_path <- "C:/Users/chitr/Dropbox/Iraq IE"
 if(Sys.info()[["user"]] == "chitr") github_file_path <- "C:/Users/chitr/Documents/GitHub/Iraq-Corridors-IE"
 
+
+#api_keys <- read.csv("~/Dropbox/World Bank/Webscraping/Files for Server/api_keys.csv",
+                     #stringsAsFactors = F)
+
 data_file_path <- file.path(project_file_path, "Data")
+
 
 # Global Parameters ------------------------------------------------------------
 UTM_IRQ <- '+init=epsg:3394'
@@ -19,6 +24,7 @@ N_CORES <- 2
 
 # Libraries --------------------------------------------------------------------
 library(sp)
+library(purrr)
 library(raster)
 library(readr)
 library(dplyr)
@@ -40,12 +46,34 @@ library(readstata13)
 library(haven)
 library(ggmap)
 library(gtools)
+library(readxl)
+library(ggrepel)
+library(readr)
+library(plm)
+library(stargazer)
+library(xml2)
+library(mapsapi)
+library(leaflet)
 library(leaflet)
 library(XML)
+library(tmap)
 library(lubridate)
 library(hrbrthemes)
 library(tidyr)
 library(stringr)
 library(lfe)
+library(devtools)
+library(usethis)
+library(viridisLite)
+library(viridis)
+library(ggpubr)
+library(jtools)
+
 source("https://raw.githubusercontent.com/ramarty/fast-functions/master/R/functions_in_chunks.R")
+source("https://raw.githubusercontent.com/ramarty/rgeos_chunks/master/R/rgeos_chunks.R")
+
+
+
+
+
 

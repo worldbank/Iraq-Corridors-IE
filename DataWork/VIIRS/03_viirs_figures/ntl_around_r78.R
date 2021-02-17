@@ -3,7 +3,7 @@
 # Load Data --------------------------------------------------------------------
 viirs_2013 <- raster(file.path(project_file_path, "Data", "VIIRS", "RawData", "annual", "irq_viirs_median_2013.tif"))
 viirs_2019 <- raster(file.path(project_file_path, "Data", "VIIRS", "RawData", "annual", "irq_viirs_median_2019.tif"))
-r78 <- read_sf(file.path(project_file_path, "Data", "Project Roads", "project_roads.geojson")) %>%
+r78 <- read_sf(file.path(project_file_path, "Data", "Project Roads","R7_R8ab","FinalData", "r7_r8ab.geojson")) %>%
   as("Spatial")
 
 # Buffer and Subset Area -------------------------------------------------------

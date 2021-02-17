@@ -1,9 +1,12 @@
 # Iraq IE
 # Distance to Cities
 
+GRID_SAMPLE <- "near_girsheen_suheila_road"
+#GRID_SAMPLE <- "near_r78ab_roads"
+
 # Load Data --------------------------------------------------------------------
 # Grid
-grid <- readRDS(file.path(project_file_path, "Data", "VIIRS", "FinalData", GRID_SAMPLE, 
+grid <- readRDS(file.path(project_file_path, "Data", "VIIRS", "FinalData", GRID_SAMPLE , 
                           "Separate Files Per Variable", "iraq_grid_blank.Rds"))
 coordinates(grid) <- ~lon+lat
 crs(grid) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
@@ -26,6 +29,7 @@ for(i in 1:nrow(cities_df)){
   
   grid[[paste0("dist_",name_i,"_km")]] <- as.vector(gDistance_chunks(grid, cities_df_i, 5000)) / 1000 # to km
 }
+
 
 # Export -----------------------------------------------------------------------
 saveRDS(grid@data, file=file.path(project_file_path, "Data", "VIIRS", "FinalData",

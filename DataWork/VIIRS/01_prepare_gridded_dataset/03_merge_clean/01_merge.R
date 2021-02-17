@@ -1,8 +1,10 @@
 # Iraq IE
 # Distance to Roads
+GRID_SAMPLE <- "near_girsheen_suheila_road"
+#GRID_SAMPLE <- "near_r78ab_roads"
 
 IN_PATH <- file.path(project_file_path, "Data", "VIIRS", "FinalData",
-                     GRID_SAMPLE,
+                     GGRID_SAMPLE,
                      "Separate Files Per Variable")
 
 # Load Data --------------------------------------------------------------------
@@ -26,7 +28,7 @@ for(data_name_i in cross_section_data_names){
   
 }
 
-# Merge Paenl Data -------------------------------------------------------------
+# Merge Panel Data -------------------------------------------------------------
 panel_data_names <- c("iraq_grid_panel_ndvi.Rds")
 
 for(data_name_i in panel_data_names){
@@ -41,8 +43,9 @@ for(data_name_i in panel_data_names){
   
 }
 
+
 # Export -----------------------------------------------------------------------
-saveRDS(panel_viirs, file.path(project_file_path, "Data", "VIIRS", "FinalData", GRID_SAMPLE,
+saveRDS(panel_viirs, file.path(project_file_path, "Data", "VIIRS", "FinalData",GRID_SAMPLE,
                               "viirs_grid.Rds"))
 
 

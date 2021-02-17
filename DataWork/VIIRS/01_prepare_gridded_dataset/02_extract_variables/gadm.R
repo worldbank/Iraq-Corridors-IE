@@ -1,6 +1,9 @@
 # Iraq IE
 # Extract GADM
 
+#GRID_SAMPLE <- "near_girsheen_suheila_road"
+GRID_SAMPLE <- "near_r78ab_roads"
+
 # Load Data --------------------------------------------------------------------
 # Grid
 grid <- readRDS(file.path(project_file_path, "Data", "VIIRS", "FinalData",

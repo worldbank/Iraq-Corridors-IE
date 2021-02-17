@@ -1,6 +1,9 @@
 # Iraq IE
 # Distance to Roads
 
+#GRID_SAMPLE <- "near_girsheen_suheila_road"
+GRID_SAMPLE <- "near_r78ab_roads"
+
 # Load Data --------------------------------------------------------------------
 # Grid
 grid <- readRDS(file.path(project_file_path, 
@@ -10,8 +13,10 @@ coordinates(grid) <- ~lon+lat
 crs(grid) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
 
 # Project Roads
-prj_rd_r78ab <- readRDS(file.path(project_file_path, "Data", "Project Roads", "R7_R8ab", "FinalData", "r7_r8ab.Rds"))
-prj_rd_gs <- readRDS(file.path(project_file_path, "Data", "Project Roads", "Girsheen-Suheila Road", "FinalData", "gs_road_polyline.Rds"))
+prj_rd_r78ab <- readRDS(file.path(project_file_path, "Data", "Project Roads", 
+                                  "R7_R8ab", "FinalData", "r7_r8ab.Rds"))
+prj_rd_gs <- readRDS(file.path(project_file_path, "Data", "Project Roads", "Girsheen-Suheila Road", 
+                               "FinalData", "gs_road_polyline.Rds"))
 
 # Prep Roads -------------------------------------------------------------------
 ## Buffer by small amount; needed for dissolving. Buffer by 1 meter
