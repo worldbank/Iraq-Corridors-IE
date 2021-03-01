@@ -42,6 +42,12 @@ iraq_adm3_df <- bind_cols(iraq_adm3@data, iraq_adm3_coords)
 coordinates(iraq_adm3_df) <- ~long+lat
 crs(iraq_adm3_df) <- CRS(UTM_IRQ)
 
+# LOOP THROUGH SPEED LIMITS ====================================================
+# Loop through different definitons of speed limits
+for(speed_limit_var in c("speed_limit", "speed_limit_gs_before", "speed_limit_gs_after")){
+  roads$speed_limit_temp <- roads[[speed_limit_var]]
+}
+
 # Make Transition Layer --------------------------------------------------------
 #### Make blank raster
 r <- raster(xmn=iraq_adm3@bbox[1,1], 
@@ -55,13 +61,13 @@ r <- raster(xmn=iraq_adm3@bbox[1,1],
 # If multiple polylines interesect with a cell, velox uses the last polygon from
 # the spatial polygons dataframe. Consequently, we sort by speeds from slowest to
 # fastest so that velox uses the fastest speed.
-roads <- roads[order(roads$speed_limit),] 
+roads <- roads[order(roads$speed_limit_temp),] 
 
 #### Rasterize Speeds
 roads_r <- r
 roads_r[] <- 0
 roads_r_vx <- velox(roads_r)
-roads_r_vx$rasterize(roads, field="speed_limit", background=WALKING_SPEED) # background should be walking speed (5km/hr); https://en.wikipedia.org/wiki/Preferred_walking_speed
+roads_r_vx$rasterize(roads, field="speed_limit_temp", background=WALKING_SPEED) # background should be walking speed (5km/hr); https://en.wikipedia.org/wiki/Preferred_walking_speed
 roads_r <- roads_r_vx$as.RasterLayer()
 
 #### Make Transition Layer
@@ -191,14 +197,12 @@ MA_df <- MA_df %>%
 iraq_adm3 <- merge(iraq_adm3, MA_df, by="uid")
 iraq_adm3 <- spTransform(iraq_adm3, CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"))
 
-## Remove unneeded variables
 iraq_adm3@data <- iraq_adm3@data %>%
   dplyr::select(-c(population, road_length_km_primary, area_km2))
 
 ## Export
 saveRDS(iraq_adm3, file.path(project_file_path, "Data", "CSO Subdistricts", "FinalData",
                             "individual_files",  "irq_market_access.Rds"))
-
 
 
 

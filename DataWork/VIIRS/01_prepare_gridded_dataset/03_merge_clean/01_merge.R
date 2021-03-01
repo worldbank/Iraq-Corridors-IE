@@ -12,9 +12,16 @@ panel_viirs <- readRDS(file.path(IN_PATH, "iraq_grid_panel_viirs_oldroad.Rds")) 
   as.data.table
 
 # Merge Cross Section Data -----------------------------------------------------
+<<<<<<< HEAD
 cross_section_data_names <- c("iraq_grid_dist_cities_oldroad.Rds",
                               "iraq_grid_dist_projectroads_oldroad.Rds",
                               "iraq_grid_gadm_oldroad.Rds")
+=======
+cross_section_data_names <- c("iraq_grid_dist_osm_roads.Rds",
+                              "iraq_grid_dist_projectroads.Rds",
+                              "iraq_grid_gadm.Rds",
+                              "iraq_grid_dist_cities.Rds")
+>>>>>>> 77c5ee7b6c11658fbbb791250ec04db74cb08023
 
 for(data_name_i in cross_section_data_names){
   print(data_name_i)

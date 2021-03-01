@@ -2,7 +2,7 @@
 # Fit with Iraq Case
 
 #### Road Shapefile
-roads <- readRDS(file.path(final_data_file_path, "OpenStreetMap", "rds", "gis_osm_roads_free_1.Rds"))
+roads <- readRDS(file.path(data_file_path, "OpenStreetMap", "FinalData", "iraq_roads_rds", "gis_osm_roads_free_1.Rds"))
 
 # Add Assumed Speed Limits to Roads --------------------------------------------
 # Define speed limits how GOSTNETs defines them.
@@ -23,4 +23,25 @@ roads$speed_limit[roads$fclass %in% c("living_street", "service")] <- 20 # not s
 
 roads <- roads[!is.na(roads$speed_limit),]
 
-saveRDS(roads, file.path(final_data_file_path, "OpenStreetMap", "rds", "gis_osm_roads_free_1_speeds.Rds"))
+# Speed limits before/after Girsheen road --------------------------------------
+roads$girsheen_suheila_rd <- 0
+roads$girsheen_suheila_rd[roads$osm_id %in% c(781158362, 
+                                              790226269, 
+                                              793871886, 
+                                              781158363, 
+                                              781158364, 
+                                              787896734, 
+                                              781158361, 
+                                              793871885)] <- 1
+
+roads$speed_limit_gs_before <- roads$speed_limit
+roads$speed_limit_gs_after <- roads$speed_limit
+roads$speed_limit_gs_before[roads$girsheen_suheila_rd == 0] <- 0
+roads$speed_limit_gs_after[roads$girsheen_suheila_rd == 1] <- 50
+
+# Export -----------------------------------------------------------------------
+saveRDS(roads, file.path(data_file_path, "OpenStreetMap", "FinalData", "iraq_roads_rds", "gis_osm_roads_free_1_speeds.Rds"))
+
+
+
+
