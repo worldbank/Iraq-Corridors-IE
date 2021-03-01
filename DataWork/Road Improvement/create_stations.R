@@ -22,10 +22,10 @@ iraq_adm <- readRDS(file.path(project_file_path,
 
 
 # Coordinates to WGS84 ---------------------------------------------------------
-coordinates(stations) <- ~lon+lat
+coordinates(stations) <- ~lat+lon
 proj4string(stations) <- CRS("+proj=utm +zone=38N +datum=WGS84 +units=m +ellps=WGS84") 
 stations <- spTransform(stations, CRS("+proj=longlat +datum=WGS84"))
-stations <- spTransform(stations,CRS(UTM_IRQ))
+#stations <- spTransform(stations,CRS(UTM_IRQ))
 stations_sf <- st_as_sf(stations)
 
 
@@ -52,13 +52,13 @@ gLength(r7, byid = FALSE)%>%
 r7_segments <- spsample(r7, n = 287, type = "regular")
 r7_segments_sf <- st_as_sf(r7_segments)
 
-#clipping the line
+#isolate the segments
 
 
 #plot
 ggplot()+
   geom_sf(data = iraq_adm)+
-  geom_sf(data = r7_segments_sf)
+  geom_sf(data = r7_stations_1)
 
 
 #Break into two segments

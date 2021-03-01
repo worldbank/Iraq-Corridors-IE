@@ -1,14 +1,14 @@
 # Iraq IE
 # Distance to Primary Roads
 
-#GRID_SAMPLE <- "near_girsheen_suheila_road"
-GRID_SAMPLE <- "near_r78ab_roads"
+GRID_SAMPLE <- "near_girsheen_suheila_road"
+#GRID_SAMPLE <- "near_r78ab_roads"
 
 # Load Data --------------------------------------------------------------------
 # Grid
 grid <- readRDS(file.path(project_file_path, "Data", "VIIRS", "FinalData", 
                           GRID_SAMPLE, "Separate Files Per Variable", 
-                          "iraq_grid_blank.Rds"))
+                          "iraq_grid_blank_oldroad.Rds"))
 coordinates(grid) <- ~lon+lat
 crs(grid) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
 
@@ -45,7 +45,8 @@ grid$dist_osm_motorway_km <- gDistance_chunks(grid, osm_roads_motorway, 5000, 1)
 # Export -----------------------------------------------------------------------
 saveRDS(grid@data, file=file.path(project_file_path, "Data", "VIIRS", "FinalData",
                                   GRID_SAMPLE,
-                                  "Separate Files Per Variable", "iraq_grid_dist_osm_roads.Rds"))
+                                  "Separate Files Per Variable", 
+                                  "iraq_grid_dist_osm_roads_oldroad.Rds"))
 
 
 

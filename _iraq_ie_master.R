@@ -11,10 +11,6 @@ if(Sys.info()[["user"]] == "robmarty") github_file_path <- "~/Documents/Github/I
 if(Sys.info()[["user"]] == "chitr") project_file_path <- "C:/Users/chitr/Dropbox/Iraq IE"
 if(Sys.info()[["user"]] == "chitr") github_file_path <- "C:/Users/chitr/Documents/GitHub/Iraq-Corridors-IE"
 
-#api_keys <- read.csv("~/Dropbox/World Bank/Webscraping/Files for Server/api_keys.csv",
-                     #stringsAsFactors = F)
-#>>>>>>> 5a4136e344d0b198e51718a4151406e0b56b9130
-
 
 # Global Parameters ------------------------------------------------------------
 UTM_IRQ <- '+init=epsg:3394'
@@ -69,7 +65,7 @@ library(jtools)
 
 source("https://raw.githubusercontent.com/ramarty/fast-functions/master/R/functions_in_chunks.R")
 source("https://raw.githubusercontent.com/ramarty/rgeos_chunks/master/R/rgeos_chunks.R")
-#>>>>>>> 5a4136e344d0b198e51718a4151406e0b56b9130
+
 
 
 

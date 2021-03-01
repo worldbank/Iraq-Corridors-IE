@@ -1,12 +1,12 @@
 # Iraq IE
-# Extract GADM
+# Extract NDVI
 
-#GRID_SAMPLE <- "near_girsheen_suheila_road"
-GRID_SAMPLE <- "near_r78ab_roads"
+GRID_SAMPLE <- "near_girsheen_suheila_road"
+#GRID_SAMPLE <- "near_r78ab_roads"
 
 # Load Data --------------------------------------------------------------------
 grid <- readRDS(file.path(project_file_path, "Data", "VIIRS", "FinalData", GRID_SAMPLE ,
-                          "Separate Files Per Variable", "iraq_grid_blank.Rds"))
+                          "Separate Files Per Variable", "iraq_grid_blank_oldroad.Rds"))
 coordinates(grid) <- ~lon+lat
 crs(grid) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
 
@@ -60,6 +60,6 @@ ndvi_all_df <- bind_rows(
 saveRDS(ndvi_all_df, file=file.path(project_file_path, "Data", "VIIRS", "FinalData",
                                     GRID_SAMPLE,
                                     "Separate Files Per Variable", 
-                                    "iraq_grid_panel_ndvi.Rds"))
+                                    "iraq_grid_panel_ndvi_oldroad.Rds"))
 
 

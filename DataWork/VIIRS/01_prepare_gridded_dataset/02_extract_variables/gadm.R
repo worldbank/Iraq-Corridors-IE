@@ -1,14 +1,14 @@
 # Iraq IE
 # Extract GADM
 
-#GRID_SAMPLE <- "near_girsheen_suheila_road"
-GRID_SAMPLE <- "near_r78ab_roads"
+GRID_SAMPLE <- "near_girsheen_suheila_road"
+#GRID_SAMPLE <- "near_r78ab_roads"
 
 # Load Data --------------------------------------------------------------------
 # Grid
 grid <- readRDS(file.path(project_file_path, "Data", "VIIRS", "FinalData",
                           GRID_SAMPLE,
-                          "Separate Files Per Variable", "iraq_grid_blank.Rds"))
+                          "Separate Files Per Variable", "iraq_grid_blank_oldroad.Rds"))
 coordinates(grid) <- ~lon+lat
 crs(grid) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
 
@@ -28,6 +28,6 @@ grid$GADM_ID_2 <- grid_OVER_iraq_adm2$GID_2
 # Export -----------------------------------------------------------------------
 saveRDS(grid@data, file=file.path(project_file_path, "Data", "VIIRS", "FinalData",
                                   GRID_SAMPLE,
-                                  "Separate Files Per Variable", "iraq_grid_gadm.Rds"))
+                                  "Separate Files Per Variable", "iraq_grid_gadm_oldroad.Rds"))
 
 
