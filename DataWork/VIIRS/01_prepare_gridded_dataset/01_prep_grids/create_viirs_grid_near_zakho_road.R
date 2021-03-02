@@ -1,5 +1,5 @@
 #Iraq
-#Prepare grid for oldroad - Girsheen
+#Prepare grid for Zakho Road -- the road used before Girsheen - Suheila began its operations
 
 # 1. Load Data
 # 2. Prep VIIRS Shapefile to limit cells in analysis
@@ -21,10 +21,10 @@ DIST_ROAD <- 20 # kilometer distance to primary road to be included in
 iraq <- readRDS(file.path(project_file_path, "Data", "GADM", "RawData", "gadm36_IRQ_0_sp.rds"))
 
 #### Project Roads
-oldroad_girsheen <- readRDS(file.path(project_file_path, 
-                                      "Data", "Project Roads", "Girsheen-Suheila Road",
+zakho <- readRDS(file.path(project_file_path, 
+                                      "Data", "Project Roads", "Zakho Road",
                                       "FinalData",
-                                      "oldroad_girsheen.Rds"))
+                                      "zakho_road.Rds"))
 
 #### VIIRS
 viirs_avg_rad <- stack(file.path(project_file_path, "Data", "VIIRS", "RawData", 
@@ -37,17 +37,17 @@ num_bands <- dim(viirs_avg_rad)[3]
 # ** 2.1 Prep Road SpatialPolygon that Limit Cells in Analysis -----------------
 #### Prep roads shapefile
 ## Common variables
-oldroad_girsheen@data <- oldroad_girsheen@data %>% mutate(id = 1) %>% dplyr::select(id)
+zakho@data <- zakho@data %>% mutate(id = 1) %>% dplyr::select(id)
 
 ## Common CRS
-oldroad_girsheen <- oldroad_girsheen %>% spTransform(CRS("+init=epsg:4326"))
+zakho <- zakho %>% spTransform(CRS("+init=epsg:4326"))
 
 ## Buffer
 # Larger buffer around road in the north
-oldroad_girsheen <- gBuffer_chunks(oldroad_girsheen, width=DIST_ROAD/111.12, 100)
+zakho <- gBuffer_chunks(zakho, width=DIST_ROAD/111.12, 100)
 
 ## Append
-roads <- oldroad_girsheen
+roads <- zakho
 
 ## Dissolve
 roads <- gBuffer(roads, width=0, byid=T) # cleanup self intersections
@@ -142,23 +142,23 @@ for(band_num in 1:max(iraq_grid_viirs$band)){
 }
 
 # Export -----------------------------------------------------------------------
-OUT_PATH <- file.path(project_file_path, "Data", "VIIRS", "FinalData", "near_girsheen_suheila_road", 
+OUT_PATH <- file.path(project_file_path, "Data", "VIIRS", "FinalData", "near_zakho_road", 
                       "Separate Files Per Variable")
 
 # 1. Panel with VIIRS
 iraq_grid_viirs_nolatlon <- subset(iraq_grid_viirs, select=-c(lat,lon,band))
-saveRDS(iraq_grid_viirs_nolatlon, file=file.path(OUT_PATH, "iraq_grid_panel_viirs_oldroad.Rds"))
+saveRDS(iraq_grid_viirs_nolatlon, file=file.path(OUT_PATH, "iraq_grid_panel_viirs.Rds"))
 rm(iraq_grid_viirs_nolatlon)
 
 # 2. Blank Panel
 iraq_grid_viirs_blankpanel <- subset(iraq_grid_viirs, select=c(id,month,year, lat, lon))
-saveRDS(iraq_grid_viirs_blankpanel, file=file.path(OUT_PATH, "iraq_grid_panel_blank_oldroad.Rds"))
+saveRDS(iraq_grid_viirs_blankpanel, file=file.path(OUT_PATH, "iraq_grid_panel_blank.Rds"))
 rm(iraq_grid_viirs_blankpanel)
 
 # 3. Blank Cross Section
 iraq_grid_viirs_blank <- iraq_grid_viirs[iraq_grid_viirs$band %in% 1,]
 iraq_grid_viirs_blank <- subset(iraq_grid_viirs_blank, select=c(id, lat, lon))
-saveRDS(iraq_grid_viirs_blank, file=file.path(OUT_PATH, "iraq_grid_blank_oldroad.Rds"))
+saveRDS(iraq_grid_viirs_blank, file=file.path(OUT_PATH, "iraq_grid_blank.Rds"))
 rm(iraq_grid_viirs_blank)
 
 

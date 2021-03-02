@@ -2,26 +2,23 @@
 # Distance to Roads
 GRID_SAMPLE <- "near_girsheen_suheila_road"
 #GRID_SAMPLE <- "near_r78ab_roads"
+#GRID_SAMPLE <- "near_zakho_road" #the old road operated before Girsheen - Suheila was constructed
+
 
 IN_PATH <- file.path(project_file_path, "Data", "VIIRS", "FinalData",
                      GRID_SAMPLE,
                      "Separate Files Per Variable")
 
 # Load Data --------------------------------------------------------------------
-panel_viirs <- readRDS(file.path(IN_PATH, "iraq_grid_panel_viirs_oldroad.Rds")) %>% 
+panel_viirs <- readRDS(file.path(IN_PATH, "iraq_grid_panel_viirs.Rds")) %>% 
   as.data.table
 
 # Merge Cross Section Data -----------------------------------------------------
-<<<<<<< HEAD
-cross_section_data_names <- c("iraq_grid_dist_cities_oldroad.Rds",
-                              "iraq_grid_dist_projectroads_oldroad.Rds",
-                              "iraq_grid_gadm_oldroad.Rds")
-=======
 cross_section_data_names <- c("iraq_grid_dist_osm_roads.Rds",
                               "iraq_grid_dist_projectroads.Rds",
                               "iraq_grid_gadm.Rds",
                               "iraq_grid_dist_cities.Rds")
->>>>>>> 77c5ee7b6c11658fbbb791250ec04db74cb08023
+
 
 for(data_name_i in cross_section_data_names){
   print(data_name_i)
@@ -36,7 +33,7 @@ for(data_name_i in cross_section_data_names){
 }
 
 # Merge Panel Data -------------------------------------------------------------
-panel_data_names <- c("iraq_grid_panel_ndvi_oldroad.Rds")
+panel_data_names <- c("iraq_grid_panel_ndvi.Rds")
 
 for(data_name_i in panel_data_names){
   print(data_name_i)
@@ -51,10 +48,9 @@ for(data_name_i in panel_data_names){
 }
 
 
-
 # Export -----------------------------------------------------------------------
 saveRDS(panel_viirs, file.path(project_file_path, "Data", "VIIRS", "FinalData",GRID_SAMPLE,
-                              "viirs_grid_oldroad.Rds"))
+                              "viirs_grid.Rds"))
 
 
 

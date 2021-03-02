@@ -5,13 +5,13 @@
 #gs
 viirs_grid_gs <- readRDS(file.path(project_file_path, "Data", "VIIRS", 
                                         "FinalData","near_girsheen_suheila_road",
-                                        "viirs_grid.Rds"))
+                                        "viirs_grid_clean.Rds"))
 
 
 #oldroad
 viirs_grid_oldroad<- readRDS(file.path(project_file_path,"Data", "VIIRS",
-                                         "FinalData", "near_girsheen_suheila_road",
-                                         "viirs_grid_oldroad.Rds" ))
+                                         "FinalData", "near_zakho_road",
+                                         "viirs_grid_clean.Rds" ))
 
 # Adding vars -------------------------------------------------------------
 viirs_grid_gs$Treated<- 0 #control road
@@ -20,17 +20,13 @@ viirs_grid_oldroad$Treated <- 1 #treatment roads
 viirs_grid_gs$dist_oldroad_km <- NA
 viirs_grid_oldroad$dist_gs_road_km <- NA
 
-viirs_grid_gs <- subset(viirs_grid_gs, select = -c(cf_cvg_df))
+
 
 # Creating panel for DID --------------------------------------------------
 #gs + oldroad
 grid_gs_oldroad <- rbind(viirs_grid_gs,viirs_grid_oldroad, fill= TRUE)
 
 #adding vars
-grid_gs_oldroad$year_month <- paste0(grid_gs_oldroad$year, "-", 
-                                           grid_gs_oldroad$month, "-01") %>% 
-  ymd() # %>% substring(1,6) ## keep as date variable; less memory intensive than string/factor
-
 grid_gs_oldroad <- grid_gs_oldroad %>%
   mutate(Time = ifelse((year_month > "2019-12-01"),1,0))
 
@@ -78,10 +74,10 @@ stargazer(did_gs_oldroad_1km,
           font.size = "small",
           digits = 3,
           omit.stat = c("ser"),
-          out = file.path(project_file_path,"Data","VIIRS","Outputs","tables" ,
-                          "did_gs_oldroad.tex"),
+          #out = file.path(project_file_path,"Data","VIIRS","Outputs","tables" ,
+           #               "did_gs_oldroad.tex"),
           float = F, align = T,
-          header = F)
+          header = F, type = "text")
 
 
 

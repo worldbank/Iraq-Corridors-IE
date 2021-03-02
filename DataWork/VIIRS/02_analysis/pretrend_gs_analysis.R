@@ -1,5 +1,5 @@
 #Iraq IE
-#Pre-trends
+#Pre-trends b/w Girsheen - Suheila & Zakho (oldroad before GS began its operations)
 
 
 # Load Data ---------------------------------------------------------------
@@ -13,110 +13,110 @@ viirs_grid_gs <- subset(viirs_grid_gs, select = -c(cf_cvg_df))
 
 #oldroad
 viirs_grid_oldroad<- readRDS(file.path(project_file_path,"Data", "VIIRS",
-                                       "FinalData", "near_girsheen_suheila_road",
-                                       "viirs_grid_oldroad.Rds" ))
-
-# Create a Trends Line ----------------------------------------------------
-#oldroad
-annual_viirs_oldroad <-
-  summaryBy(avg_rad_df ~ year,
-            data = viirs_grid_oldroad,
-            FUN = median)
-
-#girsheen
-annual_viirs_gs <-
-  summaryBy(avg_rad_df ~ year,
-            data = viirs_grid_gs,
-            FUN = median)
+                                       "FinalData", "near_zakho_road",
+                                       "viirs_grid.Rds" ))
 
 
-#plot----------------------------------------------------------------------
+# Pre - Trends ============================================================
+# 1. Summarize NTL by Year/Month ----------------------------------------------------
+#Aggregate values near Zakho (operated before the new road opened)
+viirs_grid_oldroad_5km <- viirs_grid_oldroad[viirs_grid_oldroad$dist_zakho_km <= 5,][,j=list(viirs_mean = mean(avg_rad_df, na.rm = TRUE)), 
+                                                                                     by = list(year, month)]
+
+viirs_grid_oldroad_5km$roads <- "Zakho Road"
+
+
+#Aggregate values for Girsheen - Suheila
+viirs_grid_gs_5km <- viirs_grid_gs[viirs_grid_gs$dist_gs_road_km <= 5,][,j=list(viirs_mean = mean(avg_rad_df, na.rm = TRUE)), 
+                                                                                     by = list(year, month)]
+
+viirs_grid_gs_5km$roads <- "Girsheen - Suheila"
+
+
+
+# Create dataframe with both roads ----------------------------------------
+viirs_grid_monthly <- bind_rows(viirs_grid_oldroad_5km, 
+                                viirs_grid_gs_5km) %>% 
+  as.data.frame
+viirs_grid_monthly <- melt(viirs_grid_monthly, id=c("year","roads", "month"))
+
+#Add date
+viirs_grid_monthly$date <- paste0(viirs_grid_monthly$year, "-", 
+                                  viirs_grid_monthly$month, "-", "01") %>% as.Date()
+
+
+#Annual Aggregate Dataset
+viirs_grid_annual <- viirs_grid_monthly %>%
+  group_by(year, roads, variable) %>%
+  dplyr::summarise(value = mean(value))
+
+# Add date in June 1; helpful for plotting as puts point in middle of year
+viirs_grid_annual$date <- paste0(viirs_grid_annual$year, "-06-01") %>% as.Date()
+
+#3. plot----------------------------------------------------------------------
+height = 5
+width = 6
+
 #all years
-ggplot()+
-  geom_line(aes(x = year, y = avg_rad_df.median, color = "Old Road"), data = annual_viirs_oldroad)+
-  geom_line(aes(x = year, y = avg_rad_df.median, color = "Girsheen - Suheila"), data = annual_viirs_gs)+
-  labs(color = "Road", title = "Median NTL b/w 2012 - 2020")+
-  ylab("Median NTL")+
-  xlab("Year")+
-  scale_colour_brewer(palette = "Set1")+
-  theme_minimal()+
-  theme(text = element_text(size=10),
-        axis.text.x = element_text(angle=90, hjust=1))
+ggplot() +
+  geom_line(data=viirs_grid_monthly,
+            aes(x=date, y=value, group=roads, color=roads),
+            size=0.5, alpha=0.5) +
+  geom_line(data=viirs_grid_annual,
+            aes(x=date, y=value, group=roads, color=roads),
+            size=1.5) +
+  theme_minimal() +
+  scale_colour_manual(values = c("#B8321A", "#44781E"))+
+  labs(x="",
+       y="Median Radiance",
+       title="Median Nighttime Light Radiance (Within 5km) \n2012-2020",
+       color="") +
+  ggsave(file.path(project_file_path, "Data", "VIIRS", "Outputs", "figures", 
+                   "viirs_trends_girsheen_zakho.png"), 
+         height=height, width=width)  
+
+#pre-trend
+#Focus on trends prior to 2020
+viirs_grid_annual <- viirs_grid_annual[which(viirs_grid_annual$year < 2020),]
+viirs_grid_monthly <- viirs_grid_monthly[which(viirs_grid_monthly$year < 2020),]
+
+ggplot() +
+  geom_line(data=viirs_grid_monthly,
+            aes(x=date, y=value, group=roads, color=roads),
+            size=0.5, alpha=0.5) +
+  geom_line(data=viirs_grid_annual,
+            aes(x=date, y=value, group=roads, color=roads),
+            size=1.5) +
+  theme_minimal() +
+  scale_colour_manual(values = c("#B8321A", "#44781E"))+
+  labs(x="",
+       y="Median Radiance",
+       title="Median Nighttime Light Radiance (Within 5km) \n2012-2019",
+       color="") +
+  ggsave(file.path(project_file_path, "Data", "VIIRS", "Outputs", "figures", 
+                   "viirs_pretrends_girsheen_zakho.png"), 
+         height=height, width=width)  
 
 
 
-grid_sum_stack <- viirs_grid_oldroad %>%
-  group_by(year) %>%
-  dplyr::summarise("avg_rad_5" = mean(avg_rad_df[dist_gs_road_km < 5]),
-                   "avg_rad_0-1" = mean(avg_rad_df[dist_oldroad_km > 0 & dist_oldroad_km< 1]),
-                   "avg_rad_1-2" = mean(avg_rad_df[dist_oldroad_km > 1 & dist_oldroad_km < 2]),
-                   "avg_rad_2-3" = mean(avg_rad_df[dist_oldroad_km > 2 & dist_oldroad_km < 3]),
-                   "avg_rad_3-4" = mean(avg_rad_df[dist_oldroad_km > 3 & dist_oldroad_km < 4]),
-                   "avg_rad_4-5" = mean(avg_rad_df[dist_oldroad_km > 4 & dist_oldroad_km < 5])) %>%
-  pivot_longer(cols = -year) %>%
-  mutate(name = name %>% 
-           str_replace_all("avg_rad_", "")) %>%
-  dplyr::rename(buffer = name)
+# T-TEST =====================================================================
+# 1. Match both data frames -----------------------------------------------
+#add column to grid 
+viirs_grid_oldroad_5km$road <- "zakho"
+viirs_grid_gs_5km$road <- "girsheen-suheila"
+
+viirs_grid_oldroad_5km$dist_gs_road_km <- NA
+viirs_grid_gs_5km$dist_zakho_km <- NA
 
 
-gs_ntl_trends <- grid_sum_stack %>%
-  ggplot(aes(x = year, 
-             y = value,
-             group = buffer,
-             color = buffer),
-         size = 1) +
-  geom_line(size=1) +
-  labs(color = "Buffer (km)",
-       title = "Average NTL Radiance near\nOld Road",
-       x = "", 
-       y = "Average\nRadiance") +
-  theme_minimal() + 
-  scale_colour_brewer(palette = "Dark2")
-
-gs_ntl_trends
-
-# For buffers 5, 10 20 km
-grid_buffer_stack <- viirs_grid_oldroad %>%
-  group_by(year) %>%
-  dplyr::summarise("avg_rad_5" = mean(avg_rad_df[dist_oldroad_km > 0 & dist_oldroad_km <= 5]),
-                   "avg_rad_10" = mean(avg_rad_df[dist_oldroad_km > 0 & dist_oldroad_km <= 10]),
-                   "avg_rad_20" = mean(avg_rad_df[dist_oldroad_km > 0 & dist_oldroad_km <= 20])) %>%
-  pivot_longer(cols = -year) %>%
-  mutate(name = name %>% 
-           str_replace_all("avg_rad_", "")) %>%
-  dplyr::rename(buffer = name)
-
-gs_ntl <- grid_buffer_stack %>%
-  ggplot(aes(x = year, 
-             y = value,
-             group = buffer,
-             color = buffer),
-         size = 1) +
-  geom_line(size=1) +
-  labs(color = "Buffer (km)",
-       title = "Average NTL Radiance near\nOld Road",
-       x = "", 
-       y = "Average\nRadiance") +
-  theme_minimal() + 
-  scale_colour_brewer(palette = "Dark2")
-gs_ntl
-
-
-# T-test between roads ---------------------------------------------------
-##add column to grid 
-viirs_grid_oldroad$road <- "oldroad_gs"
-viirs_grid_gs$road <- "girsheen-suheila"
-
-viirs_grid_oldroad$dist_gs_road_km <- NA
-viirs_grid_gs$dist_oldroad_km <- NA
-
+# 2. Create t-test dataframe ----------------------------------------------
 #create df for t-test
-ttest_df_oldroad_gs <- rbind(viirs_grid_gs,viirs_grid_oldroad)
-ttest_df_oldroad_gs <- ttest_df_oldroad_gs[which(ttest_df_oldroad_gs$year < 2020),]
+ttest_df_oldroad_gs <- rbind(viirs_grid_gs_5km,viirs_grid_oldroad_5km)
 
+
+# 3. Conduct t-test -------------------------------------------------------
 #conduct t-test
 t.test(avg_rad_df ~ road, data = ttest_df_oldroad_gs)
-
 
 
 
