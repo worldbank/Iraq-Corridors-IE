@@ -3,21 +3,19 @@
 WALKING_SPEED <- 5
 RESOLUTION_KM <- 3
 
-# TODO(Rob): Check with Ethiopia scripts to ensure getting correct time result
-
 # Load Data --------------------------------------------------------------------
 #### Load and merge relevant subdistrict variables
 iraq_pop <- readRDS(file.path(project_file_path, "Data", "CSO Subdistricts", 
-                               "FinalData", "individual_files",
-                               "irq_population.Rds"))
+                              "FinalData", "individual_files",
+                              "irq_population.Rds"))
 
 iraq_road_length <- readRDS(file.path(project_file_path, "Data", "CSO Subdistricts", 
-                              "FinalData", "individual_files",
-                              "irq_road_length_km.Rds"))
+                                      "FinalData", "individual_files",
+                                      "irq_road_length_km.Rds"))
 
 iraq_area <- readRDS(file.path(project_file_path, "Data", "CSO Subdistricts", 
-                                      "FinalData", "individual_files",
-                                      "irq_area.Rds"))
+                               "FinalData", "individual_files",
+                               "irq_area.Rds"))
 
 iraq_adm3 <- merge(iraq_pop, iraq_road_length@data, by = "uid")
 iraq_adm3 <- merge(iraq_adm3, iraq_area@data, by = "uid")
@@ -45,165 +43,76 @@ crs(iraq_adm3_df) <- CRS(UTM_IRQ)
 # LOOP THROUGH SPEED LIMITS ====================================================
 # Loop through different definitons of speed limits
 for(speed_limit_var in c("speed_limit", "speed_limit_gs_before", "speed_limit_gs_after")){
-  roads$speed_limit_temp <- roads[[speed_limit_var]]
+  
+  # 1. Create Travel Time Matrix -----------------------------------------------
+  ## Raster of Road Speeds
+  roads_r <- rasterize_roads(road_sdf = roads,
+                             speed_var = speed_limit_var,
+                             extent_sdf = iraq_adm3,
+                             pixel_size_km = RESOLUTION_KM,
+                             walking_speed = WALKING_SPEED,
+                             pixel_var = "time_to_cross",
+                             restrict_to_extent = T)
+  
+  ## Transition Object
+  cost_t <- transition(roads_r, function(x) 1/mean(x), directions=8)
+  
+  ## Travel Time Matrix
+  tt_df <- make_travel_time_matrix(points_sdf = iraq_adm3_df,
+                                   uid_name = "uid",
+                                   cost_t = cost_t)
+  
+  # 2. Merge in market variables to travel time matrix -------------------------
+  iraq_adm3_data <- iraq_adm3@data %>%
+    dplyr::select(uid, population, road_length_km_primary, area_km2) %>%
+    dplyr::rename(dest_uid = uid,
+                  pop = population,
+                  rdlength = road_length_km_primary,
+                  area = area_km2)
+  
+  tt_df <- merge(tt_df, iraq_adm3_data, by = "dest_uid")
+  
+  ## Remove rows where dest_uid == orig_uid
+  tt_df <- tt_df[tt_df$dest_uid != tt_df$orig_uid,]
+  
+  tt_df$distance_km <- tt_df$distance_meters / 1000
+  
+  # 3. Calculate market access -------------------------------------------------
+  # (1) Loop through different parameters, (2) store dataframes list, (3) merge
+  # all dataframes in list together
+  ma_df_list <- list()
+  
+  i <- 1
+  for(theta in c(1, 3.8, 8)){
+    for(exclude_km in c(10, 20, 50, 100)){
+      for(market_var in c("pop", "rdlength")){
+        for(travel_cost_var in c("travel_time", "distance_km")){
+          
+          ma_df_i <- calc_ma_from_tt(tt_df           = tt_df,
+                                   orig_uid_var    = "orig_uid",
+                                   market_var      = market_var,
+                                   travel_cost_var = travel_cost_var,
+                                   theta           = theta,
+                                   exclude_km      = exclude_km)
+          ma_df_list[[i]] <- ma_df_i
+          i <- i + 1
+          
+        }
+      }
+    }
+  }
+  
+  ma_df_all <- ma_df_list %>% reduce(left_join, by = "orig_uid")
+  
+  ## Rename variables: (1) uid and (2) MA with speed limit type
+  ma_df_all <- ma_df_all %>% 
+    dplyr::rename(uid = orig_uid) %>%
+    rename_at(vars(-uid), ~ paste0(., paste0('_', speed_limit_var)))
+  
+  # 4. Export ------------------------------------------------------------------
+  saveRDS(ma_df_all, file.path(project_file_path, "Data", "CSO Subdistricts", "FinalData",
+                               "individual_files",  paste0("irq_market_access_",speed_limit_var,".Rds")))
+  
 }
-
-# Make Transition Layer --------------------------------------------------------
-#### Make blank raster
-r <- raster(xmn=iraq_adm3@bbox[1,1], 
-            xmx=iraq_adm3@bbox[1,2], 
-            ymn=iraq_adm3@bbox[2,1], 
-            ymx=iraq_adm3@bbox[2,2], 
-            crs=UTM_IRQ, 
-            resolution = RESOLUTION_KM*1000)
-
-#### Sort by Speed
-# If multiple polylines interesect with a cell, velox uses the last polygon from
-# the spatial polygons dataframe. Consequently, we sort by speeds from slowest to
-# fastest so that velox uses the fastest speed.
-roads <- roads[order(roads$speed_limit_temp),] 
-
-#### Rasterize Speeds
-roads_r <- r
-roads_r[] <- 0
-roads_r_vx <- velox(roads_r)
-roads_r_vx$rasterize(roads, field="speed_limit_temp", background=WALKING_SPEED) # background should be walking speed (5km/hr); https://en.wikipedia.org/wiki/Preferred_walking_speed
-roads_r <- roads_r_vx$as.RasterLayer()
-
-#### Make Transition Layer
-cost_t <- transition(roads_r, function(x) sum(x), directions=8)
-# cost_t <- geoCorrection(cost_t, type="c") # TODO: Check; don't think need this.
-
-# Calculate Travel Times -------------------------------------------------------
-tt_df <- lapply(1:nrow(iraq_adm3_df), function(i){
-  if((i %% 10) == 0) print(i)
-  
-  tt <- costDistance(cost_t,
-                     iraq_adm3_df[i,],
-                     iraq_adm3_df) %>% as.numeric()
-  
-  tt <- tt * RESOLUTION_KM # to get more accurate travel time???? TODO
-  
-  df_out <- data.frame(dest_uid = iraq_adm3_df$uid,
-                       travel_time = tt)
-  df_out$distance_meters <- gDistance(iraq_adm3_df[i,], iraq_adm3_df, byid = T) %>% as.numeric()
-  
-  df_out$orig_uid <- iraq_adm3_df$uid[i]
-  return(df_out)
-}) %>% bind_rows()
-
-# Calcualte Market Access ------------------------------------------------------
-# Calculate market access using travel time, linear distance. Use all locations
-# and exclude locations within 100 kilometers.
-
-#### Merge in Population
-iraq_adm3_data <- iraq_adm3@data %>%
-  dplyr::select(uid, population, road_length_km_primary, area_km2) %>%
-  dplyr::rename(dest_uid = uid,
-                dest_population = population,
-                dest_road_length_km_primary = road_length_km_primary,
-                area_km2 = area_km2)
-
-tt_df <- merge(tt_df, iraq_adm3_data, by = "dest_uid")
-
-#### Remove rows where dest_uid == orig_uid
-tt_df <- tt_df[tt_df$dest_uid != tt_df$orig_uid,]
-
-#### Calculate Market Access
-MA_df <- tt_df %>% 
-  group_by(orig_uid) %>%
-  summarise(
-    MA_tt_theta1  = sum(dest_population / (travel_time^1)),
-    MA_tt_theta3_8  = sum(dest_population / (travel_time^3.8)),
-    MA_tt_theta5  = sum(dest_population / (travel_time^5)),
-    MA_tt_theta10 = sum(dest_population / (travel_time^10)),
-    MA_tt_theta15 = sum(dest_population / (travel_time^15)),
-    MA_tt_theta20 = sum(dest_population / (travel_time^20)),
-    
-    MA_dist_theta1  = sum(dest_population / (distance_meters^1)),
-    MA_dist_theta3_8  = sum(dest_population / (distance_meters^3.8)),
-    MA_dist_theta5  = sum(dest_population / (distance_meters^5)),
-    MA_dist_theta10 = sum(dest_population / (distance_meters^10)),
-    MA_dist_theta15 = sum(dest_population / (distance_meters^15)),
-    MA_dist_theta20 = sum(dest_population / (distance_meters^20)),
-    
-    MA_rdlength_theta1  = sum(dest_road_length_km_primary / (distance_meters^1)),
-    MA_rdlength_theta3_8  = sum(dest_road_length_km_primary / (distance_meters^3.8)),
-    MA_rdlength_theta5  = sum(dest_road_length_km_primary / (distance_meters^5)),
-    MA_rdlength_theta10 = sum(dest_road_length_km_primary / (distance_meters^10)),
-    MA_rdlength_theta15 = sum(dest_road_length_km_primary / (distance_meters^15)),
-    MA_rdlength_theta20 = sum(dest_road_length_km_primary / (distance_meters^20))
-  )
-
-#### Calculate Market Access - Excluding observations within 100 kilometers
-MA_exclude10km_df <- tt_df[tt_df$distance_meters > 10*1000,] %>% 
-  group_by(orig_uid) %>%
-  summarise(
-    MA_tt_theta1_exclude10km  = sum(dest_population / (travel_time^1)),
-    MA_tt_theta3_8_exclude10km  = sum(dest_population / (travel_time^3.8)),
-    MA_tt_theta5_exclude10km  = sum(dest_population / (travel_time^5)),
-    MA_tt_theta10_exclude10km = sum(dest_population / (travel_time^10)),
-    MA_tt_theta15_exclude10km = sum(dest_population / (travel_time^15)),
-    MA_tt_theta20_exclude10km = sum(dest_population / (travel_time^20)),
-    
-    MA_dist_theta1_exclude10km  = sum(dest_population / (distance_meters^1)),
-    MA_dist_theta3_8_exclude10km  = sum(dest_population / (distance_meters^3.8)),
-    MA_dist_theta5_exclude10km  = sum(dest_population / (distance_meters^5)),
-    MA_dist_theta10_exclude10km = sum(dest_population / (distance_meters^10)),
-    MA_dist_theta15_exclude10km = sum(dest_population / (distance_meters^15)),
-    MA_dist_theta20_exclude10km = sum(dest_population / (distance_meters^20)),
-    
-    MA_rdlength_theta1_exclude10km  = sum(dest_road_length_km_primary / (distance_meters^1)),
-    MA_rdlength_theta3_8_exclude10km  = sum(dest_road_length_km_primary / (distance_meters^3.8)),
-    MA_rdlength_theta5_exclude10km  = sum(dest_road_length_km_primary / (distance_meters^5)),
-    MA_rdlength_theta10_exclude10km = sum(dest_road_length_km_primary / (distance_meters^10)),
-    MA_rdlength_theta15_exclude10km = sum(dest_road_length_km_primary / (distance_meters^15)),
-    MA_rdlength_theta20_exclude10km = sum(dest_road_length_km_primary / (distance_meters^20))
-  )
-
-#### Calculate Market Access - Excluding observations within 100 kilometers
-MA_exclude100km_df <- tt_df[tt_df$distance_meters > 100*1000,] %>% 
-  group_by(orig_uid) %>%
-  summarise(MA_tt_theta1_exclude100km  = sum(dest_population / (travel_time^1)),
-            MA_tt_theta3_8_exclude100km  = sum(dest_population / (travel_time^3.8)),
-            MA_tt_theta5_exclude100km  = sum(dest_population / (travel_time^5)),
-            MA_tt_theta10_exclude100km = sum(dest_population / (travel_time^10)),
-            MA_tt_theta15_exclude100km = sum(dest_population / (travel_time^15)),
-            MA_tt_theta20_exclude100km = sum(dest_population / (travel_time^20)),
-            
-            MA_dist_theta1_exclude100km  = sum(dest_population / (distance_meters^1)),
-            MA_dist_theta3_8_exclude100km  = sum(dest_population / (distance_meters^3.8)),
-            MA_dist_theta5_exclude100km  = sum(dest_population / (distance_meters^5)),
-            MA_dist_theta10_exclude100km = sum(dest_population / (distance_meters^10)),
-            MA_dist_theta15_exclude100km = sum(dest_population / (distance_meters^15)),
-            MA_dist_theta20_exclude100km = sum(dest_population / (distance_meters^20)),
-            
-            MA_rdlength_theta1_exclude100km  = sum(dest_road_length_km_primary / (distance_meters^1)),
-            MA_rdlength_theta3_8_exclude100km  = sum(dest_road_length_km_primary / (distance_meters^3.8)),
-            MA_rdlength_theta5_exclude100km  = sum(dest_road_length_km_primary / (distance_meters^5)),
-            MA_rdlength_theta10_exclude100km = sum(dest_road_length_km_primary / (distance_meters^10)),
-            MA_rdlength_theta15_exclude100km = sum(dest_road_length_km_primary / (distance_meters^15)),
-            MA_rdlength_theta20_exclude100km = sum(dest_road_length_km_primary / (distance_meters^20))
-            )
-
-
-MA_df <- merge(MA_df, MA_exclude10km_df, by = "orig_uid", all = T)
-MA_df <- merge(MA_df, MA_exclude100km_df, by = "orig_uid", all = T)
-
-# Export -----------------------------------------------------------------------
-## Merge back with data
-MA_df <- MA_df %>% 
-  dplyr::rename(uid = orig_uid)
-iraq_adm3 <- merge(iraq_adm3, MA_df, by="uid")
-iraq_adm3 <- spTransform(iraq_adm3, CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"))
-
-iraq_adm3@data <- iraq_adm3@data %>%
-  dplyr::select(-c(population, road_length_km_primary, area_km2))
-
-## Export
-saveRDS(iraq_adm3, file.path(project_file_path, "Data", "CSO Subdistricts", "FinalData",
-                            "individual_files",  "irq_market_access.Rds"))
-
-
 
 
