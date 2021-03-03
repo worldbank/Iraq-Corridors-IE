@@ -4,11 +4,11 @@
 # Load Data ---------------------------------------------------------------
 viirs_grid_gs <- readRDS(file.path(project_file_path,"Data", "VIIRS",
                                    "FinalData", "near_girsheen_suheila_road",
-                                   "viirs_grid.Rds"))
+                                   "viirs_grid_clean.Rds"))
 
 viirs_grid_oldroad <- readRDS(file.path(project_file_path,"Data", "VIIRS",
-                                   "FinalData", "near_girsheen_suheila_road",
-                                   "viirs_grid_oldroad.Rds"))
+                                   "FinalData", "near_zakho_road",
+                                   "viirs_grid_clean.Rds"))
 
 
 #project road
@@ -17,8 +17,8 @@ gs_road <- readRDS(file.path(project_file_path,"Data", "Project Roads",
                              "gs_road_polyline.Rds"))
 
 oldroad_gs <- readRDS(file.path(project_file_path,"Data", "Project Roads",
-                             "Girsheen-Suheila Road", "FinalData",
-                             "oldroad_girsheen.Rds"))
+                             "Zakho Road", "FinalData",
+                             "zakho_road.Rds"))
 
 #check
 leaflet() %>%
@@ -39,15 +39,6 @@ viirs_grid_oldroad$log_viirs <- log(viirs_grid_oldroad$avg_rad_df + 1)
 viirs_grid_gs$dist_oldroad_km <- NA 
 viirs_grid_oldroad$dist_gs_road_km <- NA
 
-
-#adding date var
-viirs_grid_gs$year_month <- paste0(viirs_grid_gs$year, "-", 
-                                        viirs_grid_gs$month, "-01") %>% 
-  ymd()
-
-viirs_grid_oldroad$year_month <- paste0(viirs_grid_oldroad$year, "-", 
-                                   viirs_grid_oldroad$month, "-01") %>% 
-  ymd()
 
 #adding liberation from ISIS
 viirs_grid_gs <- viirs_grid_gs %>%
@@ -71,7 +62,7 @@ grid_annual_1km <- viirs_grid_gs %>%
 
 grid_annual_1km_oldroad <- viirs_grid_oldroad %>%
   # remove areas 0-1 km from road, as may just be picking up street or car lights
-  filter(dist_oldroad_km < 2) %>%
+  filter(dist_zakho_km < 2) %>%
   group_by(id, year,year_month,liberation,log_viirs) %>%
   dplyr::summarise(ndvi = mean(ndvi)) %>%
   ungroup() %>%
@@ -94,7 +85,7 @@ grid_annual_5km <- viirs_grid_gs %>%
 
 grid_annual_5km_oldroad <- viirs_grid_oldroad %>%
   # remove areas 0-1 km from road, as may just be picking up street or car lights
-  filter(dist_oldroad_km> 1 & dist_oldroad_km < 5) %>%
+  filter(dist_zakho_km> 1 & dist_zakho_km < 5) %>%
   group_by(id, year,year_month,liberation,log_viirs) %>%
   dplyr::summarise(ndvi = mean(ndvi)) %>%
   ungroup() %>%
@@ -152,7 +143,7 @@ grid_annual_10km<- viirs_grid_gs %>%
 
 grid_annual_10km_oldroad <- viirs_grid_oldroad %>%
   # remove areas 0-1 km from road, as may just be picking up street or car lights
-  filter(dist_oldroad_km > 1 & dist_oldroad_km < 10) %>%
+  filter(dist_zakho_km > 1 & dist_zakho_km < 10) %>%
   group_by(id, year,year_month,liberation,log_viirs) %>%
   dplyr::summarise(ndvi = mean(ndvi)) %>%
   ungroup() %>%
@@ -191,7 +182,7 @@ grid_annual_20km<- viirs_grid_gs %>%
 
 grid_annual_20km_oldroad <- viirs_grid_oldroad %>%
   # remove areas 0-1 km from road, as may just be picking up street or car lights
-  filter(dist_oldroad_km> 1 & dist_oldroad_km < 20) %>%
+  filter(dist_zakho_km> 1 & dist_zakho_km < 20) %>%
   group_by(id, year,year_month,liberation,log_viirs) %>%
   dplyr::summarise(ndvi = mean(ndvi)) %>%
   ungroup() %>%
