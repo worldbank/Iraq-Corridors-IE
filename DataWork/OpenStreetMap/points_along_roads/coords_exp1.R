@@ -1,8 +1,6 @@
 #Iraq IE
 
 #Extract points for traffic analysis
-
-
 # Load Data --------------------------------------------------------------------
 roads <- readRDS(file.path(project_file_path,
                            "Data", "OpenStreetMap", 
@@ -10,13 +8,13 @@ roads <- readRDS(file.path(project_file_path,
                            "gis_osm_roads_free_1.Rds"))
 
 
-# Extract Expressway 1 ----------------------------------------------------
+# Extract Expressway 1 =========================================================
+#1.Subset roads
 exp1 <- roads[which(roads$fclass == "trunk"),]
 exp1 <- roads[which(roads$ref == "1"|roads$ref == "NA"),]
 
 
-# Convert to Centroids ----------------------------------------------------
-#32.1394816,39.824116, 37.1404947,42.5703336
+#2.Convert to centroids
 exp1@data <- exp1 %>% 
   gCentroid(byid = T)%>%
   coordinates() %>%
@@ -27,15 +25,13 @@ exp1@data <- exp1 %>%
 
 
 
-# Trimming the Road -------------------------------------------------------
+#3. Trim the road
 exp1_sub <- exp1[which(exp1$lon_centroid > 42 & exp1$lon_centroid > 39.8),]
-
-#reorder the coordinates and remove a section
-exp1_sub <- exp1_sub[order(exp1_sub$lat_centroid),]
-exp1_sub <- exp1_sub[-c(119:250),]
+exp1_sub <- exp1_sub[order(exp1_sub$lat_centroid),] #reorder the coordinates 
+exp1_sub <- exp1_sub[-c(119:250),] #remove section to the west
 
 
-#check
+#4. Check
 leaflet() %>%
   addTiles() %>%
   addPolylines(data = exp1_sub)
@@ -53,12 +49,24 @@ pts <- spsample(exp1_sub, n = numOfPoints, type = "regular")
 #re-project back to lat/lon
 pts <- spTransform(pts, CRS("+proj=longlat +datum=WGS84"))
 
-#convert to dataframe
+
+# Create Dataframe =========================================================
+#1.Convert to dataframe
 pts <- as.data.frame(pts)
 
-#rename columns
+#2.Rename columns
 names(pts)[names(pts) == 'coords.x1'] <- 'lon'
 names(pts)[names(pts) == 'coords.x2'] <- 'lat'
+
+#check
+leaflet()%>%
+  addTiles()%>%
+  addCircles(data = pts)
+
+# Export ------------------------------------------------------------------
+write.csv(pts,file.path(project_file_path,"Data", "OpenStreetMap",
+                        "FinalData","coords_exp1","coords_exp1.csv"), row.names = T)
+
 
 
 
