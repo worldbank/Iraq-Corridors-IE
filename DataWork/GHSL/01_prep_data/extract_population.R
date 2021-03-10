@@ -12,8 +12,7 @@ iraq_adm <- readRDS(file.path(project_file_path,"Data","GADM",
 
 # Changing Projection -----------------------------------------------------
 iraq_adm <- iraq_adm%>% 
-  spTransform(CRS(UTM_IRQ))
-
+   spTransform(crs(population))
 
 # Cropping Raster ---------------------------------------------------------
 iraq_pop <- crop(population,extent(iraq_adm))
