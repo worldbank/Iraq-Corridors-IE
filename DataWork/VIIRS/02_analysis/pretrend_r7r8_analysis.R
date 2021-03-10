@@ -20,30 +20,67 @@ viirs_r7r8 <- readRDS(file.path(project_file_path,"Data","VIIRS","FinalData",
 viirs_highway5 <- merge(grid_highway5,viirs_highway5)
 viirs_r7r8 <- merge(grid_r7r8,viirs_r7r8)
 
-# Create a trends line ------------------------------------------------
+# Create a trends line ===================================================
 ##annual
 
+
+# 1. Aggregate Data -------------------------------------------------------
 #highway5
 viirs_highway5 <- viirs_highway5 %>%
-  dplyr::group_by(id,year) %>%
+  dplyr::group_by(id,year,month) %>%
   dplyr::summarise(avg_rad_df = mean(avg_rad_df))
 
-# Log
-viirs_highway5$avg_rad_df_ln <- log(viirs_highway5$avg_rad_df+1)
+viirs_highway5$road <- "Highway 5(Iran)"
 
-
+#r7r8
 viirs_r7r8 <- viirs_r7r8 %>%
-  dplyr::group_by(id,year) %>%
+  dplyr::group_by(id,year,month) %>%
   dplyr::summarise(avg_rad_df = mean(avg_rad_df))
 
-# Log
-viirs_r7r8$avg_rad_df_ln <- log(viirs_r7r8$avg_rad_df+1)
+viirs_r7r8$road <- "R78ab"
 
-#plot
-ggplot()+
-  geom_line(data = viirs_highway5, aes(x = year, y = avg_rad_df_ln , color = "Highway 5 (Iran)"))+
-  geom_line(data = viirs_r7r8, aes(x = year, y = avg_rad_df_ln , color = "R7R8"))+
-  theme_minimal()
+
+
+# 2. Create Dataframe -----------------------------------------------------
+viirs_grid_monthly <- bind_rows(viirs_highway5, 
+                                viirs_r7r8)%>% 
+  as.data.frame
+viirs_grid_monthly <- melt(viirs_grid_monthly, id=c("year","road", "month"))
+
+#Add date
+viirs_grid_monthly$date <- paste0(viirs_grid_monthly$year, "-", 
+                                  viirs_grid_monthly$month, "-", "01") %>% as.Date()
+
+#Annual Aggregate Dataset
+viirs_grid_annual <- viirs_grid_monthly %>%
+  group_by(year, road, variable) %>%
+  dplyr::summarise(value = mean(value))
+
+# Add date in June 1; helpful for plotting as puts point in middle of year
+viirs_grid_annual$date <- paste0(viirs_grid_annual$year, "-06-01") %>% as.Date()
+
+#Focus on trends prior to 2016
+viirs_grid_annual <- viirs_grid_annual[which(viirs_grid_annual$year < 2016),]
+viirs_grid_monthly <- viirs_grid_monthly[which(viirs_grid_monthly$year < 2016),]
+
+# Plot --------------------------------------------------------------------
+height = 5
+width = 6
+
+ggplot() +
+  geom_line(data=viirs_grid_annual,
+            aes(x=date, y=value, group=road, color=road),
+            size=1.5) +
+  theme_minimal() +
+  scale_colour_manual(values = c("#B8321A", "#44781E"))+
+  labs(x="",
+       y="Average Radiance",
+       title="Average Nighttime Light Radiance (Within 5km) \n2012-2015",
+       color="") 
+  #ggsave(file.path(project_file_path, "Data", "VIIRS", "Outputs", "figures", 
+   #                "viirs_pretrends_girsheen_zakho.png"), 
+    #     height=height, width=width)  
+
 
 
 
