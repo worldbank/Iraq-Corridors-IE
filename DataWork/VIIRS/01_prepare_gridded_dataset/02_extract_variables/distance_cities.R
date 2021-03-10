@@ -1,8 +1,9 @@
 # Iraq IE
 # Distance to Cities
 
-GRID_SAMPLE <- "near_girsheen_suheila_road"
+#GRID_SAMPLE <- "near_girsheen_suheila_road"
 #GRID_SAMPLE <- "near_r78ab_roads"
+GRID_SAMPLE <- "near_zakho_road" #the old road operated before Girsheen - Suheila was constructed
 
 # Load Data --------------------------------------------------------------------
 # Grid

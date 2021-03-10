@@ -2,19 +2,23 @@
 # Distance to Roads
 GRID_SAMPLE <- "near_girsheen_suheila_road"
 #GRID_SAMPLE <- "near_r78ab_roads"
+#GRID_SAMPLE <- "near_zakho_road" #the old road operated before Girsheen - Suheila was constructed
+
 
 IN_PATH <- file.path(project_file_path, "Data", "VIIRS", "FinalData",
-                     GGRID_SAMPLE,
+                     GRID_SAMPLE,
                      "Separate Files Per Variable")
 
 # Load Data --------------------------------------------------------------------
-panel_viirs <- readRDS(file.path(IN_PATH, "iraq_grid_panel_viirs.Rds")) %>% as.data.table
+panel_viirs <- readRDS(file.path(IN_PATH, "iraq_grid_panel_viirs.Rds")) %>% 
+  as.data.table
 
 # Merge Cross Section Data -----------------------------------------------------
 cross_section_data_names <- c("iraq_grid_dist_osm_roads.Rds",
                               "iraq_grid_dist_projectroads.Rds",
                               "iraq_grid_gadm.Rds",
                               "iraq_grid_dist_cities.Rds")
+
 
 for(data_name_i in cross_section_data_names){
   print(data_name_i)

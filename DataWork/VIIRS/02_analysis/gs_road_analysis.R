@@ -319,3 +319,13 @@ stargazer(reg_5km,
 
 plot_summs(reg_5km, reg_10km, reg_20km,inner_ci_level = .9,
            model.names = c("5km", "10km", "20km"), scale = TRUE)
+
+#Average Change (2020 - 2019)/2019
+## Annual Aggregate Dataset
+viirs_grid_annual <- grid %>%
+  group_by(year) %>%
+  dplyr::summarise(mean_ntl = mean(avg_rad_df))
+
+v19 <- viirs_grid_annual$mean_ntl[viirs_grid_annual$year %in% 2019]
+v20 <- viirs_grid_annual$mean_ntl[viirs_grid_annual$year %in% 2020]
+(v20 - v19)/v19

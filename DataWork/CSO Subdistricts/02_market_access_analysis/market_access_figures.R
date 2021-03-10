@@ -3,7 +3,7 @@
 
 # Load Data --------------------------------------------------------------------
 iraq_adm3 <- readRDS(file.path(project_file_path, "Data", "CSO Subdistricts", "FinalData", 
-                               "subdistrict_population_marketaccess.Rds"))
+                               "subdistrict_timeinvariant_data_sp.Rds"))
 
 # Log Market Access ------------------------------------------------------------
 MA_vars <- names(iraq_adm3)[grepl("MA_", names(iraq_adm3))]
@@ -19,7 +19,7 @@ ggplot(data=iraq_adm3@data) +
   geom_histogram(aes(x=road_length_km_primary), color="black", fill="gray60") +
   theme_minimal() +
   labs(x="Road Length (km)",
-       y="Number of Sub-Districts") +
+       y="Number of Sub-Districts") 
 ggsave(file.path(project_file_path, "Data", "CSO Subdistricts", "Outputs", "figures", "road_length_hist.png"), height=6, width=6)
 
 # Map --------------------------------------------------------------------------
@@ -36,6 +36,7 @@ p1 <- ggplot() +
   coord_quickmap() +
   theme(plot.title = element_text(hjust = 0.5))
 
+
 p2 <- ggplot() +
   geom_polygon(data=iraq_adm3_tidy, aes(x=long, y=lat, group=group, fill=MA_rdlength_theta3_8_exclude100km), color="black") +
   labs(fill = "Market\nAccess\nGroup",
@@ -45,6 +46,7 @@ p2 <- ggplot() +
   coord_quickmap() +
   theme(plot.title = element_text(hjust = 0.5))
 
+
 p_all <- ggarrange(p1, p2)
 ggsave(p_all, filename = file.path(project_file_path, "Data", "CSO Subdistricts", "Outputs", "figures", "market_access.png"), height=6, width=12)
 ggsave(p1, filename = file.path(project_file_path, "Data", "CSO Subdistricts", "Outputs", "figures", "market_access_3_8.png"), height=6, width=6)
@@ -52,8 +54,8 @@ ggsave(p2, filename = file.path(project_file_path, "Data", "CSO Subdistricts", "
 
 # Focused on North -------------------------------------------------------------
 
-#### bbox in north
-north_center <- data.frame(id = 1, lat = 36.417783, lon = 43.519662)
+#### bbox in north (36.417783, 43.519662) ,
+north_center <- data.frame(id = 1, lat = 37.059575  , lon = 42.5560143) 
 coordinates(north_center) <- ~lon+lat
 north_center <- gBuffer(north_center, width=150/111.12)
 north_center <- north_center@bbox
@@ -83,6 +85,8 @@ p_north_3_8 <- ggmap(north_center_basemap) +
   coord_quickmap() +
   theme(plot.title = element_text(hjust = 0.5))
 
+p_north_3_8
+
 p_north_3_8_exclude <- ggmap(north_center_basemap) +
   geom_polygon(data=iraq_adm3_north_tidy, aes(x=long, y=lat, group=group, fill=MA_rdlength_theta3_8_exclude10km), 
                alpha = .7, color=NA) +
@@ -92,6 +96,8 @@ p_north_3_8_exclude <- ggmap(north_center_basemap) +
   theme_void() +
   coord_quickmap() +
   theme(plot.title = element_text(hjust = 0.5))
+
+p_north_3_8_exclude
 
 # Focused on South -------------------------------------------------------------
 
