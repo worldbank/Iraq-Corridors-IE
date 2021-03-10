@@ -43,6 +43,7 @@ crs(iraq_adm3_df) <- CRS(UTM_IRQ)
 # LOOP THROUGH SPEED LIMITS ====================================================
 # Loop through different definitons of speed limits
 for(speed_limit_var in c("speed_limit", "speed_limit_gs_before", "speed_limit_gs_after")){
+  print(paste(speed_limit_var, "============================================="))
   
   # 1. Create Travel Time Matrix -----------------------------------------------
   ## Raster of Road Speeds

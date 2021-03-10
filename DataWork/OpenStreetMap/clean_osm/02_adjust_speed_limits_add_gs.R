@@ -24,6 +24,10 @@ roads$speed_limit[roads$fclass %in% c("living_street", "service")] <- 20 # not s
 roads <- roads[!is.na(roads$speed_limit),]
 
 # Speed limits before/after Girsheen road --------------------------------------
+#gs_sdf <- readRDS(file.path(project_file_path, "Data", "Project Roads", 
+#                            "Girsheen-Suheila Road", "FinalData",
+#                            "gs_road_polyline.Rds"))
+
 roads$girsheen_suheila_rd <- 0
 roads$girsheen_suheila_rd[roads$osm_id %in% c(781158362, 
                                               790226269, 
@@ -36,8 +40,13 @@ roads$girsheen_suheila_rd[roads$osm_id %in% c(781158362,
 
 roads$speed_limit_gs_before <- roads$speed_limit
 roads$speed_limit_gs_after <- roads$speed_limit
-roads$speed_limit_gs_before[roads$girsheen_suheila_rd == 0] <- 0
+roads$speed_limit_gs_before[roads$girsheen_suheila_rd == 1] <- 0
 roads$speed_limit_gs_after[roads$girsheen_suheila_rd == 1] <- 50
+
+# leaflet() %>%
+#   addTiles() %>%
+#   addPolylines(data = roads[roads$girsheen_suheila_rd == 1,]) %>%
+#   addPolylines(data = gs_sdf, color = "blue")
 
 # Export -----------------------------------------------------------------------
 saveRDS(roads, file.path(data_file_path, "OpenStreetMap", "FinalData", "iraq_roads_rds", "gis_osm_roads_free_1_speeds.Rds"))

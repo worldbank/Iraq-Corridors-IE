@@ -10,11 +10,12 @@ time_invariant_data_names <- c("irq_adm_info.Rds",
                          "irq_dist_cities.Rds",
                          "irq_dist_r78_km.Rds",
                          "irq_dist_gs_km.Rds",
-                         "irq_market_access.Rds",
+                         "irq_market_access_speed_limit.Rds",
+                         "irq_market_access_speed_limit_gs_before.Rds",
+                         "irq_market_access_speed_limit_gs_after.Rds",
                          "irq_population.Rds",
                          "irq_road_length_km.Rds",
                          "irq_dist_road_type.Rds")
-
 
 # Merge Time Invariant ---------------------------------------------------------
 #### Merge Data

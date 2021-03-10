@@ -126,7 +126,7 @@ calc_ma_from_tt <- function(tt_df,
   ## Compute Market Access
   MA_df <- tt_df[tt_df$distance_meters > exclude_km*1000,] %>% 
     group_by(orig_uid) %>%
-    summarise(MA_VAR  = sum(market_var / (travel_cost^theta)))
+    dplyr::summarise(MA_VAR  = sum(market_var / (travel_cost^theta)))
   
   ## Names for variable name
   travel_cost_name <- ""
