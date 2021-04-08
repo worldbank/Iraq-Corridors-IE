@@ -76,19 +76,19 @@ ma_beforegs_exclude10km <- ggmap(north_center_basemap) +
 
 #Exclude 20km
 ma_beforegs_exclude20km <- ggmap(north_center_basemap) +
-  geom_polygon(data = gs_tidy, aes(x=long, y = lat, color = "Girsheen - Suheila"))+
+  geom_path(data = gs_tidy, aes(x=long, y = lat, color = "Girsheen - Suheila"))+
   geom_polygon(data=iraq_adm3_north_tidy, aes(x=long, y=lat, group=group, 
                                               fill=MA_tt_rdlength_theta3_8_exclude20km_speed_limit_gs_before), 
                alpha = .7, color=NA) +
   scale_fill_continuous(type = "viridis", limits = c(0,20)) +
   labs(fill = "Market\nAccess\nGroup",
-       title = "Market Access (theta = 3.8)\nExcluding 10km",
+       title = "Market Access (theta = 3.8)\nExcluding 20km",
        color = "") +
   theme_void() +
   coord_quickmap() +
   theme(plot.title = element_text(hjust = 0.5))+
   ggsave(file.path(data_file_path, "Clusters", "Outputs", 
-                   "ma_3_8_beforegs_exclude10km.png"), height=6, width=6)
+                   "ma_3_8_beforegs_exclude20km.png"), height=6, width=6)
 
 
 #Exclude 50km
@@ -107,4 +107,108 @@ ma_beforegs_exclude50km <- ggmap(north_center_basemap) +
   ggsave(file.path(data_file_path, "Clusters", "Outputs", 
                    "ma_3_8_beforegs_exclude50km.png"), height=6, width=6)
 
+#Exclude 100km
+ma_beforegs_exclude100km <- ggmap(north_center_basemap) +
+  geom_path(data = gs_tidy, aes(x=long, y = lat, color = "Girsheen - Suheila"))+
+  geom_polygon(data=iraq_adm3_north_tidy, aes(x=long, y=lat, group=group, 
+                                              fill=MA_tt_rdlength_theta3_8_exclude100km_speed_limit_gs_before), 
+               alpha = .7, color=NA) +
+  scale_fill_continuous(type = "viridis", limits = c(0,20)) +
+  labs(fill = "Market\nAccess\nGroup",
+       title = "Market Access (theta = 3.8)\nExcluding 100km",
+       color = "")+
+  theme_void() +
+  coord_quickmap() +
+  theme(plot.title = element_text(hjust = 0.5))+
+  ggsave(file.path(data_file_path, "Clusters", "Outputs", 
+                   "ma_3_8_beforegs_exclude100km.png"), height=6, width=6)
 
+
+# After GS Opened ---------------------------------------------------------
+
+#exclude 10km
+ma_aftergs_exclude10km <- ggmap(north_center_basemap) +
+  geom_path(data = gs_tidy, aes(x=long, y = lat, color = "Girsheen - Suheila"))+
+  geom_polygon(data=iraq_adm3_north_tidy, aes(x=long, y=lat, group=group, 
+                                              fill=MA_tt_rdlength_theta3_8_exclude10km_speed_limit_gs_after), 
+               alpha = .7, color=NA) +
+  scale_fill_continuous(type = "viridis", limits = c(0,20)) +
+  labs(fill = "Market\nAccess\nGroup",
+       title = "Market Access (theta = 3.8)\nExcluding 10km", 
+       color = "") +
+  theme_void() +
+  coord_quickmap() +
+  theme(plot.title = element_text(hjust = 0.5))+
+  ggsave(file.path(data_file_path, "Clusters", "Outputs", 
+                   "ma_3_8_aftergs_exclude10km.png"), height=6, width=6)
+
+
+#Exclude 20km
+ma_aftergs_exclude20km <- ggmap(north_center_basemap) +
+  geom_path(data = gs_tidy, aes(x=long, y = lat, color = "Girsheen - Suheila"))+
+  geom_polygon(data=iraq_adm3_north_tidy, aes(x=long, y=lat, group=group, 
+                                              fill=MA_tt_rdlength_theta3_8_exclude20km_speed_limit_gs_after), 
+               alpha = .7, color=NA) +
+  scale_fill_continuous(type = "viridis", limits = c(0,20)) +
+  labs(fill = "Market\nAccess\nGroup",
+       title = "Market Access (theta = 3.8)\nExcluding 20km",
+       color = "") +
+  theme_void() +
+  coord_quickmap() +
+  theme(plot.title = element_text(hjust = 0.5))+
+  ggsave(file.path(data_file_path, "Clusters", "Outputs", 
+                   "ma_3_8_aftergs_exclude20km.png"), height=6, width=6)
+
+
+#Exclude 50km
+ma_aftergs_exclude50km <- ggmap(north_center_basemap) +
+  geom_path(data = gs_tidy, aes(x=long, y = lat, color = "Girsheen - Suheila"))+
+  geom_polygon(data=iraq_adm3_north_tidy, aes(x=long, y=lat, group=group, 
+                                              fill=MA_tt_rdlength_theta3_8_exclude50km_speed_limit_gs_after), 
+               alpha = .7, color=NA) +
+  scale_fill_continuous(type = "viridis", limits = c(0,20)) +
+  labs(fill = "Market\nAccess\nGroup",
+       title = "Market Access (theta = 3.8)\nExcluding 50km",
+       color = "")+
+  theme_void() +
+  coord_quickmap() +
+  theme(plot.title = element_text(hjust = 0.5))+
+  ggsave(file.path(data_file_path, "Clusters", "Outputs", 
+                   "ma_3_8_aftergs_exclude50km.png"), height=6, width=6)
+
+#Exclude 100km
+ma_aftergs_exclude100km <- ggmap(north_center_basemap) +
+  geom_path(data = gs_tidy, aes(x=long, y = lat, color = "Girsheen - Suheila"))+
+  geom_polygon(data=iraq_adm3_north_tidy, aes(x=long, y=lat, group=group, 
+                                              fill=MA_tt_rdlength_theta3_8_exclude100km_speed_limit_gs_after), 
+               alpha = .7, color=NA) +
+  scale_fill_continuous(type = "viridis", limits = c(0,20)) +
+  labs(fill = "Market\nAccess\nGroup",
+       title = "Market Access (theta = 3.8)\nExcluding 100km",
+       color = "")+
+  theme_void() +
+  coord_quickmap() +
+  theme(plot.title = element_text(hjust = 0.5))+
+  ggsave(file.path(data_file_path, "Clusters", "Outputs", 
+                   "ma_3_8_aftergs_exclude100km.png"), height=6, width=6)
+
+
+# Using Travel Time -------------------------------------------------------
+ma_beforegs_exclude10km <- ggmap(north_center_basemap) +
+  geom_path(data = gs_tidy, aes(x=long, y = lat, color = "Girsheen - Suheila"))+
+  geom_polygon(data=iraq_adm3_north_tidy, aes(x=long, y=lat, group=group, 
+                                              fill=MA_dist_rdlength_theta3_8_exclude10km_speed_limit_gs_after), 
+               alpha = .7, color=NA) +
+  scale_fill_continuous(type = "viridis", limits = c(0,20)) +
+  labs(fill = "Market\nAccess\nGroup",
+       title = "Market Access (theta = 3.8)\nExcluding 10km",
+       color = "")+
+  theme_void() +
+  coord_quickmap() +
+  theme(plot.title = element_text(hjust = 0.5))
+  #ggsave(file.path(data_file_path, "Clusters", "Outputs", 
+   #                "ma_3_8_aftergs_exclude100km.png"), height=6, width=6)
+
+ma_beforegs_exclude10km
+
+names(iraq_adm3_north_tidy)
