@@ -75,9 +75,3 @@ source("https://raw.githubusercontent.com/ramarty/rgeos_chunks/master/R/rgeos_ch
 source(file.path(github_file_path, "Functions", "market_access.R"))
 
 
-a <- raster(file.path(project_file_path, "Data", "VIIRS", "RawData", "annual", "irq_viirs_median_2012.tif"))
-table(grid_2012[] %in% 0) # few zeros
-grid_2012[][grid_2012[] < 1] <- 0
-table(grid_2012[] %in% 0) # lots of zeros
-grid_clumps <- clump(a, directions=8)
-
