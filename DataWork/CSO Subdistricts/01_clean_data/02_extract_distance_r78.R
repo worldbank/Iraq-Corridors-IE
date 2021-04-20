@@ -9,9 +9,8 @@ iraq_adm3 <- iraq_adm3 %>% spTransform(CRS(UTM_IRQ))
 
 # Distance to r78am ------------------------------------------------------------
 # Load/reproject
-r78 <- readRDS(file.path(project_file_path, "Data",
-                         "HDX Primary Roads", "FinalData","r7_r8ab",
-                         "r7_r8ab_prj_rd.Rds")) 
+r78 <- readRDS(file.path(data_file_path, "Project Roads", "R7_R8ab", "FinalData",
+                         "r7_r8ab.RDS")) 
 r78 <- r78 %>% spTransform(CRS(UTM_IRQ))
 
 # Dissolve
