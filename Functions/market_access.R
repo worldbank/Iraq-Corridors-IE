@@ -1,16 +1,9 @@
-<<<<<<< HEAD
-rasterize_roads <- function(road_sdf, 
-                            speed_var, 
-                            extent_sdf = NULL,
-                            pixel_size_km = 0.5,
-=======
 # Market Access Functions
 
 rasterize_roads <- function(road_sdf, 
                             speed_var, 
                             extent_sdf = NULL,
-                            pixel_size_km = 1,
->>>>>>> master
+                            pixel_size_km = 0.5,
                             walking_speed = 5,
                             pixel_var = "time_to_cross",
                             restrict_to_extent = F){
