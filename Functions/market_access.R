@@ -37,6 +37,7 @@ rasterize_roads <- function(road_sdf,
   
   #### Prep extent object
   if(is.null(extent_sdf)) extent_sdf <- road_sdf
+  extent_sdf <- extent_sdf %>% extent()
   
   #### Make blank raster
   r <- raster(xmn=extent_sdf@bbox[1,1], 
@@ -59,7 +60,7 @@ rasterize_roads <- function(road_sdf,
   #### Mask
   if(restrict_to_extent %in% T){
     roads_r <- mask(roads_r, extent_sdf)
-    roads_r[][is.na(roads_r[])] <- (pixel_size_km/walking_speed) * 999
+    roads_r[][is.na(roads_r[])] <- (pixel_size_km/walking_speed) * 100
   }
   
   return(roads_r)
