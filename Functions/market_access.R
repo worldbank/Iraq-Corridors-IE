@@ -62,11 +62,9 @@ rasterize_roads <- function(road_sdf,
   #### Mask
   if(restrict_to_extent %in% T){
     roads_r <- mask(roads_r, extent_sdf)
-<<<<<<< HEAD
+
     roads_r[][is.na(roads_r[])] <- (pixel_size_km/walking_speed) * 100
-=======
-    roads_r[][is.na(roads_r[])] <- (pixel_size_km/walking_speed) * 999
->>>>>>> master
+
   }
   
   return(roads_r)
@@ -150,11 +148,6 @@ calc_ma_from_tt <- function(tt_df,
                                                      exclude_name)
   
   return(MA_df)
-<<<<<<< HEAD
-}
-=======
+
 }
 
-
-
->>>>>>> master
