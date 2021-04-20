@@ -9,7 +9,7 @@ stations <- read.csv(file.path(project_file_path,
 
 reports <- read.csv(file.path(project_file_path, 
                               "Project Documents", "DIME Notes from Reports", 
-                              "1_road_improvement_data_v1.csv"))
+                              "1_road_improvement_data_v2.csv"))
 
 r7r8 <- readRDS(file.path(project_file_path, 
                              "Data", "Project Roads", "R7_R8ab",
@@ -18,15 +18,15 @@ r7r8 <- readRDS(file.path(project_file_path,
 
 iraq_adm <- readRDS(file.path(project_file_path, 
                      "Data", "CSO Subdistricts", "FinalData",  
-                     "individual_files","irq_adm_info.Rds"))%>% st_as_sf()
+                     "individual_files","irq_adm_info.Rds"))
 
 
 # Coordinates to WGS84 ---------------------------------------------------------
 coordinates(stations) <- ~lat+lon
 proj4string(stations) <- CRS("+proj=utm +zone=38N +datum=WGS84 +units=m +ellps=WGS84") 
-stations <- spTransform(stations, CRS("+proj=longlat +datum=WGS84"))
-#stations <- spTransform(stations,CRS(UTM_IRQ))
-stations_sf <- st_as_sf(stations)
+stations <- spTransform(stations, CRS(UTM_IRQ))
+
+
 
 
 # Subset Road & Stations for R7-------------------------------------------------------------
@@ -62,11 +62,11 @@ ggplot()+
 
 
 #Break into two segments
-
 r7_segments_sf_1 <- r7_segments_sf[which(r7_segments_sf$Y < 919637.509132235),]
 
 r7_segments_sf$stationID <- "" # initialize with empty string
-r7_segments_sf$stationID[r7_segments_sf$lat > VALUE & r7_segments_sf$lon > VALUE] <- paste0(i:SOMETHINGHERE,"+000")
+r7_segments_sf$stationID[r7_segments_sf$lat > VALUE & r7_segments_sf$lon > VALUE] <- 
+  paste0(i:SOMETHINGHERE,"+000")
 
 for (i in 1:nrow(r7_segments_sf)){
   if (r7_segments_sf$geometry == ){

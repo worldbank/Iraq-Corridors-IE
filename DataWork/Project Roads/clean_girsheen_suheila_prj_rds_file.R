@@ -44,6 +44,8 @@ road_sdf <- sp::SpatialLines(list(lines_obj))
 road_sdf$name <- "Girsheen-Suheila Road"
 crs(road_sdf) <- CRS("+init=epsg:4326")
 
+road_sdf_sp <- road_sdf %>% st_as_sf() %>% as("Spatial")
+
 # Export -----------------------------------------------------------------------
 write.csv(road_df, file.path(project_file_path, "Data", "Project Roads", 
                              "Girsheen-Suheila Road", "FinalData",
@@ -54,7 +56,7 @@ st_write(road_sdf %>% st_as_sf(), file.path(project_file_path, "Data", "Project 
                                             "Girsheen-Suheila Road", "FinalData",
                                             "gs_road_polyline.geojson"))
 
-saveRDS(road_sdf, file.path(project_file_path, "Data", "Project Roads", 
+saveRDS(road_sdf_sp, file.path(project_file_path, "Data", "Project Roads", 
                              "Girsheen-Suheila Road", "FinalData",
                              "gs_road_polyline.Rds"))
 
