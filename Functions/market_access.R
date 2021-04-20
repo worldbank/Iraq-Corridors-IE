@@ -38,8 +38,7 @@ rasterize_roads <- function(road_sdf,
   road_sdf <- road_sdf[order(road_sdf$speed_var_temp, decreasing=F),] 
   
   #### Prep extent object
-  if(is.null(extent_sdf)) extent_sdf <- road_sdf
-  extent_sdf <- extent_sdf %>% extent()
+  if(is.null(extent_sdf)) extent_sdf <- road_sdf %>% extent()
 
   #### Make blank raster
   r <- raster(xmn=extent_sdf@bbox[1,1], 
