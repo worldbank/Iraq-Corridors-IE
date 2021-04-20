@@ -71,8 +71,6 @@ library(jtools)
 library(Manu)
 
 
-
-
 source("https://raw.githubusercontent.com/ramarty/fast-functions/master/R/functions_in_chunks.R")
 source("https://raw.githubusercontent.com/ramarty/rgeos_chunks/master/R/rgeos_chunks.R")
 source(file.path(github_file_path, "Functions", "market_access.R"))
