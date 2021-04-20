@@ -1,7 +1,7 @@
 rasterize_roads <- function(road_sdf, 
                             speed_var, 
                             extent_sdf = NULL,
-                            pixel_size_km = 1,
+                            pixel_size_km = 0.5,
                             walking_speed = 5,
                             pixel_var = "time_to_cross",
                             restrict_to_extent = F){
@@ -33,7 +33,7 @@ rasterize_roads <- function(road_sdf,
   # If multiple polylines interesect with a cell, velox uses the last polygon from
   # the spatial polygons dataframe. Consequently, we sort by speeds from slowest to
   # fastest so that velox uses the fastest speed.
-  road_sdf <- road_sdf[order(road_sdf$speed_var_temp),] 
+  road_sdf <- road_sdf[order(road_sdf$speed_var_temp, decreasing=F),] 
   
   #### Prep extent object
   if(is.null(extent_sdf)) extent_sdf <- road_sdf

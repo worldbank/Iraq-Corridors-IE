@@ -1,9 +1,8 @@
 #Calculate market access
 WALKING_SPEED <- 5
-RESOLUTION_KM <- 3
+RESOLUTION_KM <- 0.5
 
 # Load Data ---------------------------------------------------------------
-
 iraq_adm3 <- file.path(data_file_path,"Clusters", "FinalData",  
                           "individual_files","irq_blank.Rds")
 
@@ -25,10 +24,10 @@ iraq_adm3 <- merge(iraq_adm3, iraq_area@data, by = "uid")
 ####Road Shapefile
 roads <- readRDS(file.path(data_file_path, "OpenStreetMap",
                            "FinalData", "iraq_roads_rds", 
-                           "gis_osm_roads_free_1_speeds.Rds"))
+                           "gis_osm_roads_free_1_speeds_utm.Rds"))
 
 # Reproject to UTM -------------------------------------------------------------
-roads <- spTransform(roads, CRS(UTM_IRQ))
+#roads <- spTransform(roads, CRS(UTM_IRQ))
 iraq_adm3 <- spTransform(iraq_adm3, CRS(UTM_IRQ))
 
 # Prepare Points File to Calculate Speeds --------------------------------------
@@ -39,7 +38,6 @@ iraq_adm3_coords <- coordinates(iraq_adm3) %>%
 iraq_adm3_df <- bind_cols(iraq_adm3@data, iraq_adm3_coords)
 coordinates(iraq_adm3_df) <- ~long+lat
 crs(iraq_adm3_df) <- CRS(UTM_IRQ)
-
 
 
 # LOOP THROUGH SPEED LIMITS ====================================================
