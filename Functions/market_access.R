@@ -60,7 +60,7 @@ rasterize_roads <- function(road_sdf,
   
   #### Mask
   if(restrict_to_extent %in% T){
-    roads_r <- mask(roads_r, extent_sdf)
+    roads_r <- raster::mask(roads_r, extent_sdf)
 
     roads_r[][is.na(roads_r[])] <- (pixel_size_km/walking_speed) * 100
 
