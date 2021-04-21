@@ -94,7 +94,7 @@ make_travel_time_matrix <- function(points_sdf,
                          travel_time = tt)
     df_out$distance_meters <- gDistance(points_sdf[i,], points_sdf, byid = T) %>% as.numeric()
     
-    df_out$orig_uid <- iraq_adm3_df$uid[i]
+    df_out$orig_uid <- points_sdf$uid[i]
     
     ## Replace "uid" with [uid_name]
     names(df_out) <- names(df_out) %>% str_replace_all("uid", uid_name)
