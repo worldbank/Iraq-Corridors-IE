@@ -9,8 +9,10 @@ GRID_SAMPLE <- "near_zakho_road" #the old road operated before Girsheen - Suheil
 # Load Data --------------------------------------------------------------------
 # Grid
 grid <- readRDS(file.path(project_file_path, 
-                          "Data", "VIIRS", "FinalData", GRID_SAMPLE,
+"Data", "VIIRS", "Fina                          lData", GRID_SAMPLE,
                           "Separate Files Per Variable", "iraq_grid_blank.Rds"))
+grid_sample <- crs(+proj = lon+lat)
+
 coordinates(grid) <- ~lon+lat
 crs(grid) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
 
@@ -24,6 +26,10 @@ crs(grid) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,
 prj_rd_zakho_gs <- readRDS(file.path(project_file_path,"Data", "Project Roads",
                                 "Zakho Road", "FinalData",
                                 "zakho_road.Rds"))
+
+prj_rd_zakho_gs_sf <- st_as_sf(prj_rd_zakho_gs)
+
+st_length(prj_rd_zakho_gs_sf)
 
 # Prep Roads -------------------------------------------------------------------
 ## Buffer by small amount; needed for dissolving. Buffer by 1 meter

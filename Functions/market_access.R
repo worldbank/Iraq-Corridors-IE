@@ -1,7 +1,9 @@
+# Market Access Functions
+
 rasterize_roads <- function(road_sdf, 
                             speed_var, 
                             extent_sdf = NULL,
-                            pixel_size_km = 1,
+                            pixel_size_km = 0.5,
                             walking_speed = 5,
                             pixel_var = "time_to_cross",
                             restrict_to_extent = F){
@@ -33,10 +35,10 @@ rasterize_roads <- function(road_sdf,
   # If multiple polylines interesect with a cell, velox uses the last polygon from
   # the spatial polygons dataframe. Consequently, we sort by speeds from slowest to
   # fastest so that velox uses the fastest speed.
-  road_sdf <- road_sdf[order(road_sdf$speed_var_temp),] 
+  road_sdf <- road_sdf[order(road_sdf$speed_var_temp, decreasing=F),] 
   
   #### Prep extent object
-  if(is.null(extent_sdf)) extent_sdf <- road_sdf
+  if(is.null(extent_sdf)) extent_sdf <- road_sdf %>% extent()
   
   #### Make blank raster
   r <- raster(xmn=extent_sdf@bbox[1,1], 
@@ -59,7 +61,9 @@ rasterize_roads <- function(road_sdf,
   #### Mask
   if(restrict_to_extent %in% T){
     roads_r <- mask(roads_r, extent_sdf)
-    roads_r[][is.na(roads_r[])] <- (pixel_size_km/walking_speed) * 999
+    
+    roads_r[][is.na(roads_r[])] <- (pixel_size_km/walking_speed) * 100
+    
   }
   
   return(roads_r)
@@ -90,7 +94,7 @@ make_travel_time_matrix <- function(points_sdf,
                          travel_time = tt)
     df_out$distance_meters <- gDistance(points_sdf[i,], points_sdf, byid = T) %>% as.numeric()
     
-    df_out$orig_uid <- iraq_adm3_df$uid[i]
+    df_out$orig_uid <- points_sdf$uid[i]
     
     ## Replace "uid" with [uid_name]
     names(df_out) <- names(df_out) %>% str_replace_all("uid", uid_name)
@@ -143,4 +147,5 @@ calc_ma_from_tt <- function(tt_df,
                                                      exclude_name)
   
   return(MA_df)
+  
 }

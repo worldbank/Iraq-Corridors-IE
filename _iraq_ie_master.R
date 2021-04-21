@@ -17,7 +17,6 @@ if(Sys.info()[["user"]] == "chitr") github_file_path <- "C:/Users/chitr/Document
 
 data_file_path <- file.path(project_file_path, "Data")
 
-
 # Global Parameters ------------------------------------------------------------
 UTM_IRQ <- '+init=epsg:3394'
 N_CORES <- 2
@@ -74,9 +73,3 @@ library(Manu)
 source("https://raw.githubusercontent.com/ramarty/fast-functions/master/R/functions_in_chunks.R")
 source("https://raw.githubusercontent.com/ramarty/rgeos_chunks/master/R/rgeos_chunks.R")
 source(file.path(github_file_path, "Functions", "market_access.R"))
-
-
-
-
-
-

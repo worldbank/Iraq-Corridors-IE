@@ -1,33 +1,64 @@
 #Market access stats
 
 # Load Data --------------------------------------------------------------------
-iraq_adm3 <- readRDS(file.path(data_file_path, "Clusters", "FinalData", 
-                               "subdistrict_timeinvariant_data_sp.Rds")) %>% st_as_sf()
-
-gs <- readRDS(file.path(data_file_path, "Project Roads","Girsheen-Suheila Road","FinalData", 
-                        "gs_road_polyline.Rds"))
+cluster <- readRDS(file.path(data_file_path, "Clusters", "FinalData", 
+                               "cluster_timeinvariant_data_sp.Rds")) %>% st_as_sf()
 
 
 # Subset Data -------------------------------------------------------------
-iraq_adm3_50km <- as.data.table(iraq_adm3[iraq_adm3$dist_gs_km < 50.1,])
+cluster_50km <- as.data.table(cluster[cluster$dist_gs_km < 50.1,])
 
 # Tables ------------------------------------------------------------------
-
 #theta = 3.8
-table1_theta_3_8 <- iraq_adm3_50km[,.(MA_tt_rdlength_theta3_8_speed_limit_before,
-                            MA_tt_rdlength_theta3_8_speed_limit_gs_after,dist_gs_km),by = uid]
+table1_theta_3_8 <- cluster_50km[,.(MA_tt_rdlength_theta3_8_speed_limit,
+                                      MA_tt_rdlength_theta3_8_speed_limit_gs_before,
+                                      MA_tt_rdlength_theta3_8_speed_limit_gs_after,
+                                      MA_tt_rdlength_theta3_8_exclude10km_speed_limit,
+                                      MA_tt_rdlength_theta3_8_exclude10km_speed_limit_gs_before,
+                                      MA_tt_rdlength_theta3_8_exclude10km_speed_limit_gs_after,
+                                      MA_tt_rdlength_theta3_8_exclude20km_speed_limit,
+                                      MA_tt_rdlength_theta3_8_exclude20km_speed_limit_gs_before,
+                                      MA_tt_rdlength_theta3_8_exclude20km_speed_limit_gs_after,
+                                      MA_tt_rdlength_theta3_8_exclude50km_speed_limit,
+                                      MA_tt_rdlength_theta3_8_exclude50km_speed_limit_gs_before,
+                                      MA_tt_rdlength_theta3_8_exclude50km_speed_limit_gs_after,
+                                      MA_tt_rdlength_theta3_8_exclude100km_speed_limit,
+                                      MA_tt_rdlength_theta3_8_exclude100km_speed_limit_gs_before,
+                                      MA_tt_rdlength_theta3_8_exclude100km_speed_limit_gs_after,
+                                      dist_gs_km),by = uid]
 table1_theta_3_8 <- setDT(table1_theta_3_8)[order(dist_gs_km)]
+table1_theta_3_8 <- setnames(table1_theta_3_8, 
+                           old = c("MA_tt_rdlength_theta3_8_speed_limit",
+                                   "MA_tt_rdlength_theta3_8_speed_limit_gs_before",
+                                   "MA_tt_rdlength_theta3_8_speed_limit_gs_after",
+                                   "MA_tt_rdlength_theta3_8_exclude10km_speed_limit",
+                                   "MA_tt_rdlength_theta3_8_exclude10km_speed_limit_gs_before",
+                                   "MA_tt_rdlength_theta3_8_exclude10km_speed_limit_gs_after",
+                                   "MA_tt_rdlength_theta3_8_exclude20km_speed_limit",
+                                   "MA_tt_rdlength_theta3_8_exclude20km_speed_limit_gs_before",
+                                   "MA_tt_rdlength_theta3_8_exclude20km_speed_limit_gs_after",
+                                   "MA_tt_rdlength_theta3_8_exclude50km_speed_limit",
+                                   "MA_tt_rdlength_theta3_8_exclude50km_speed_limit_gs_before",
+                                   "MA_tt_rdlength_theta3_8_exclude50km_speed_limit_gs_after",
+                                   "MA_tt_rdlength_theta3_8_exclude100km_speed_limit",
+                                   "MA_tt_rdlength_theta3_8_exclude100km_speed_limit_gs_before",
+                                   "MA_tt_rdlength_theta3_8_exclude100km_speed_limit_gs_after"),
+                           new = c("speed_limit",
+                                   "gs_before",
+                                   "gs_after",
+                                   "speed_limit_exclude10km",
+                                   "gs_before_exclude10km",
+                                   "gs_after_exclude10km",
+                                   "speed_limit_exclude20km",
+                                   "gs_before_exclude20km",
+                                   "gs_after_exclude20km",
+                                   "speed_limit_exclude50km",
+                                   "gs_before_exclude50km",
+                                   "gs_after_exclude50km",
+                                   "speed_limit_exclude100km",
+                                   "gs_before_exclude100km",
+                                   "gs_after_exclude100km"))
 
-table1_theta_3_8 <- setnames(table1_theta_3_8, old = c("MA_tt_rdlength_theta3_8_exclude100km_speed_limit_gs_before",
-                   "MA_tt_rdlength_theta3_8_exclude100km_speed_limit_gs_after"),
-                   new = c("MA_tt_rdlength_before","MA_tt_rdlength_after"))
-
-#theta = 8
-
-table2_theta_8 <- iraq_adm3_50km[,.(MA_tt_rdlength_theta8_exclude100km_speed_limit_gs_before,
-                                    MA_tt_rdlength_theta8_exclude100km_speed_limit_gs_after,dist_gs_km),by = uid]
-table2_theta_8 <- setDT(table2_theta_8)[order(dist_gs_km)]
-table2_theta_8 <- setnames(table2_theta_8, old = c("MA_tt_rdlength_theta8_exclude100km_speed_limit_gs_before",
-                         "MA_tt_rdlength_theta8_exclude100km_speed_limit_gs_after"),
-         new = c("MA_tt_rdlength_before","MA_tt_rdlength_after"))
-
+table1_theta_3_8 <- table1_theta_3_8 %>% 
+  drop_na()                                   
+                                   

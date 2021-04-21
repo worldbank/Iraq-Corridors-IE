@@ -10,7 +10,7 @@ source(file.path(SUBDIST_CLEAN_PATH, "01_prep_clusters.R"))
 
 ## 2. Extract data to shapefile
 source(file.path(SUBDIST_CLEAN_PATH, "02_distance_cities.R"))
-source(file.path(SUBDIST_CLEAN_PATH, "02_extract_project_roads.R"))
+source(file.path(SUBDIST_CLEAN_PATH, "02_distance_project_roads.R"))
 source(file.path(SUBDIST_CLEAN_PATH, "02_extract_area.R"))
 source(file.path(SUBDIST_CLEAN_PATH, "02_extract_population.R"))
 source(file.path(SUBDIST_CLEAN_PATH, "02_extract_road_length.R"))
