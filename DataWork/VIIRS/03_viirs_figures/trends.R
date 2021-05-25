@@ -2,7 +2,8 @@
 # Distance to Roads
 
 # Load Data --------------------------------------------------------------------
-viirs_grid <- readRDS(file.path(project_file_path, "Data", "VIIRS", "FinalData", "iraq_viirs_grid_data.Rds"))
+viirs_grid <- readRDS(file.path(project_file_path, "Data", "VIIRS", "FinalData", "near_r78ab_roads", 
+                                "viirs_grid_clean.Rds"))
 
 # Prep Data --------------------------------------------------------------------
 ## Create Variables
