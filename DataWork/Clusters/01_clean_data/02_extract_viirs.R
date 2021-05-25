@@ -46,6 +46,8 @@ for(i in unique(viirs_stacked_df$viirs_time_id)){
 #### Add Data
 iraq_adm3_df <- merge(iraq_adm3@data, viirs_stacked_df, by = "uid")
 
+test <- iraq_adm3_df[which(is.na(iraq_adm3_df$viirs_mean)),]
+
 # Export -----------------------------------------------------------------------
 saveRDS(iraq_adm3_df, file.path(data_file_path,"Clusters","FinalData",  
                                 "individual_files",

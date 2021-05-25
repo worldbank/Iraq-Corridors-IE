@@ -86,7 +86,7 @@ for (speed_limit_var in c("speed_limit", "speed_limit_gs_before", "speed_limit_g
   
   i <- 1
   for(theta in c(1, 3.8, 8)){
-    for(exclude_km in c(10, 20, 50, 100)){
+    for(exclude_km in c(0,10, 20, 50, 100)){
       for(market_var in c("pop", "rdlength")){
         for(travel_cost_var in c("travel_time", "distance_km")){
           

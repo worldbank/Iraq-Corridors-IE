@@ -7,7 +7,7 @@ cluster <- readRDS(file.path(data_file_path,"Clusters", "FinalData",
 # Prep Data --------------------------------------------------------------------
 
 # 1.Subset Data -----------------------------------------------------------
-vars <- c("month", "year", "viirs_mean", "dist_r78_km")
+vars <- c("uid" ,"month", "year", "viirs_mean", "dist_r78_km")
 cluster <- cluster[vars]
 
 ## By Buffer
@@ -43,6 +43,7 @@ cluster_annual$date <- paste0(cluster_annual$year, "-06-01") %>% as.Date()
 
 cluster_20km <- cluster[cluster$dist_r78_km <= 20,]
 cluster_20km$buffer <- "20km"
+
 
 cluster_monthly_with20 <- bind_rows(cluster_5km,
                                     cluster_10km,
