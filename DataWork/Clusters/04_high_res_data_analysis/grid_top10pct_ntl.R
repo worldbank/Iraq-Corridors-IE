@@ -20,32 +20,33 @@ clusters_sf <- readRDS(file.path(data_file_path, "Clusters","FinalData",
 clusters_r78_20km <- clusters %>%
   filter(dist_r78_km < 20.1) %>%
   select(c(uid,viirs_mean,viirs_time_id,year,month,
-           cell_id,area_km2,distance_to_baghdad,
-           dist_r78_km,population,road_length_km_primary)) #subset within 20km of project road
+           area_km2,distance_to_baghdad,
+           dist_r78_km,road_length_km_primary)) #subset within 20km of project road
 
 clusters_r78_20km_coords <- clusters_sf %>%
   filter(dist_r78_km < 20.1) %>%
-  select(c(uid,cell_id,geometry))
+  select(c(uid,geometry))
 
 clusters_r78_20km <- left_join(clusters_r78_20km,clusters_r78_20km_coords,
-                               by = c("uid","cell_id")) #merging lat/lon
+                               by = c("uid")) #merging lat/lon
 
 
 #gs
 clusters_gs_20km <- clusters %>%
   filter(dist_gs_km < 20.1) %>%
   select(c(uid,viirs_mean,viirs_time_id,year,month,
-           cell_id,area_km2,distance_to_baghdad,
-           dist_gs_km,population,road_length_km_primary))
+           area_km2,distance_to_baghdad,
+           dist_gs_km,road_length_km_primary))
 
 
 clusters_gs_20km_coords <- clusters_sf %>%
   filter(dist_gs_km < 20.1) %>%
-  select(c(uid,cell_id,geometry))
+  select(c(uid,geometry))
 
 
 clusters_gs_20km <- left_join(clusters_gs_20km,clusters_gs_20km_coords,
-                              by = c("uid","cell_id")) #merging lat/lon
+                              by = c("uid")) #merging lat/lon
+
 
 
 # Computing Top 10 Percentiles --------------------------------------------
@@ -69,7 +70,7 @@ clusters_gs_20km$top10_pctl_2020 <- ifelse(clusters_gs_20km$viirs_mean > 86.3,1,
 #r78
 clusters_r78_2015_2020 <- clusters_r78_20km %>%
   filter(year == 2015 | year == 2020) %>%
-  group_by(uid,year)%>%
+  group_by(uid,year) %>%
   summarize(annual_mean = mean(viirs_mean)) %>%
   drop_na(annual_mean) %>%
   change(clusters_r78_2015_2020,
@@ -84,7 +85,7 @@ clusters_r78_2015_2020 <- clusters_r78_20km %>%
 #gs
 clusters_gs_2015_2020 <- clusters_gs_20km %>%
   filter(year == 2015 | year == 2020) %>%
-  group_by(uid,year)%>%
+  group_by(uid,year) %>%
   summarize(annual_mean = mean(viirs_mean)) %>%
   drop_na(annual_mean) %>%
   change(clusters_gs_2015_2020,
@@ -113,12 +114,13 @@ clusters_r78_2015_2020 <- clusters_r78_2015_2020 %>%
   summarize(top10_pctl_2015_2020) %>% #creates var that flags the 90th percentile by cluster
   drop_na(top10_pctl_2015_2020)
   
+  
 
 
 clusters_gs_2015_2020 <- clusters_gs_2015_2020 %>%
   mutate(top10_pctl_2015_2020 = ifelse(clusters_gs_2015_2020$pct_change_2015_2020 > 493.8,1,0)) %>%
   group_by(uid) %>%
-  summarize(top10_pctl_2015_2020) %>% 
+  summarize(top10_pctl_2015_2020) %>%
   drop_na(top10_pctl_2015_2020)
 
   
@@ -127,6 +129,20 @@ clusters_r78_20km <- left_join(clusters_r78_20km,clusters_r78_2015_2020,by = c("
 clusters_gs_20km <- left_join(clusters_gs_20km,clusters_gs_2015_2020,by = c("uid"))
 
 
+#convert to shapefile
+clusters_r78_20km <- st_as_sf(clusters_r78_20km)
+clusters_r78_20km <- st_as_sf(clusters_r78_20km)
+
+# Export ------------------------------------------------------------------
+st_write(clusters_r78_20km,file.path(data_file_path,"Clusters","FinalData",
+                                      "clusters_r78.geojson"))
+
+st_write(clusters_gs_20km,file.path(data_file_path,"Clusters","FinalData",
+                                      "clusters_girsheen_suheila.geojson"))
+
+
+test <- st_read(file.path(data_file_path,"Clusters","FinalData",
+                                           "clusters_girsheen_suheila.geojson"))
 
 
 
