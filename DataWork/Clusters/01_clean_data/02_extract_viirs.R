@@ -15,7 +15,7 @@ viirs_stacked_df <- lapply(1:93, function(i){
   viirs <- raster(file.path(project_file_path, "Data", "VIIRS", "RawData", "monthly", 
                             "iraq_viirs_raw_monthly_start_201204_avg_rad.tif"), i) %>% velox()
   
-  viirs_mean <- viirs$extract(sp = iraq_adm3, fun=function(x) mean(x, na.rm=T))
+  viirs_mean <- viirs$extract(sp = iraq_adm3, fun=function(x) mean(x, na.rm=T), small = T)
   
   viirs_df <- data.frame(viirs_mean = viirs_mean,
                         uid = iraq_adm3$uid,
@@ -49,3 +49,6 @@ iraq_adm3_df <- merge(iraq_adm3@data, viirs_stacked_df, by = "uid")
 saveRDS(iraq_adm3_df, file.path(data_file_path,"Clusters","FinalData",  
                                 "individual_files",
                                 "irq_viirs_monthly.Rds"))
+
+
+
