@@ -85,9 +85,9 @@ ggplot()+
   geom_point(aes(x = start_lon, y = start_lat, color = "road upgrades"), 
                data = reports_2017)+
   labs(color = "", title = "Road Upgrades in 2017")+
-  theme_minimal()+
-  ggsave(file.path(data_file_path, "Road Improvement", "R7",
-                   "Outputs","road_upgrades_r7_2017.png"))
+  theme_minimal()
+  #ggsave(file.path(data_file_path, "Road Improvement", "R7",
+                   #"Outputs","road_upgrades_r7_2017.png"))
 
 
 

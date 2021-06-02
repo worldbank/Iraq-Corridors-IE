@@ -72,8 +72,7 @@ library(osrm)
 library(formattable)
 library(geojsonio)
 library(DataCombine)
-
-
+library(nngeo)
 
 
 source("https://raw.githubusercontent.com/ramarty/fast-functions/master/R/functions_in_chunks.R")
