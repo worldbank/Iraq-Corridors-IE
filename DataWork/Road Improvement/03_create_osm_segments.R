@@ -114,6 +114,18 @@ saveRDS(osm, file.path(data_file_path, "Road Improvement",
 
 
 #check start and end point
+r7r8_sf <- st_as_sf(r7r8)
+
+ggplot()+
+  geom_sf(data = r7r8_sf)+
+  geom_point(aes(x = 46.01701, y = 31.08463, color = "start_r7"), data = osm)+
+  geom_point(aes(x = 47.16362, y = 30.56596, color = "end_r7"), data = osm) +
+  geom_point(aes(x = 47.46865, y = 30.46909, color = "start_r8a"), data = osm)+
+  geom_point(aes(x = 47.74221, y = 30.54130, color = "end_r8a"), data = osm)+
+  geom_point(aes(x = 47.16370, y = 30.56586, color = "start_r8b"), data = osm)+
+  geom_point(aes(x = 47.72081, y = 30.13217, color = "end_r8b"), data = osm)+             
+  theme_minimal()
+  
 
 
 
