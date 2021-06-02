@@ -9,7 +9,7 @@ viirs_all <- raster(file.path(project_file_path, "Data", "VIIRS", "RawData", "mo
                               "iraq_viirs_raw_monthly_start_201204_avg_rad.tif"))
 
 
-viirs_stacked_df <- lapply(1:93, function(i){
+viirs_stacked_df <- lapply(1:97, function(i){
   
   print(i)
   
