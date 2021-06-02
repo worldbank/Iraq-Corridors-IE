@@ -40,6 +40,6 @@ stations <- stations %>%
   arrange(road.x, dist_to_project_origin_kms) %>%
   mutate(diff = dist_to_project_origin_kms - dist_to_osm_origin_kms)
   
- 
 
+#plot osm origin and project origin
 

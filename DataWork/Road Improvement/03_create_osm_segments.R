@@ -113,6 +113,7 @@ saveRDS(osm, file.path(data_file_path, "Road Improvement",
                                    "osm_segments.Rds"))
 
 
+#check start and end point
 
 
 

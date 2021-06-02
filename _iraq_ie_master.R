@@ -73,6 +73,7 @@ library(formattable)
 library(geojsonio)
 library(DataCombine)
 library(nngeo)
+library(qwraps2)
 
 
 source("https://raw.githubusercontent.com/ramarty/fast-functions/master/R/functions_in_chunks.R")
