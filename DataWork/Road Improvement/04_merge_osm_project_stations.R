@@ -32,13 +32,14 @@ stations <- st_as_sf(stations,coords = c("lon","lat"), crs = UTM_IRQ)
 osm <- st_as_sf(osm,coords = c("Longitude","Latitude"), crs = UTM_IRQ)
 
 # Step 4: Merging osm and project data ------------------------------------
-test <- st_nn(stations,osm,returnDist = T, k = 1)
-
-
 stations <- st_join(stations,osm,st_nn, k = 1)
-stations$diff <- stations$dist_to_project_origin_kms - stations$dist_to_osm_origin_kms
 
+
+#check difference in origins
 stations <- stations %>%
-  arrange(road.x, dist_to_project_origin_kms)
+  arrange(road.x, dist_to_project_origin_kms) %>%
+  mutate(diff = dist_to_project_origin_kms - dist_to_osm_origin_kms)
+  
+ 
 
 
