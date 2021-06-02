@@ -58,7 +58,7 @@ for (speed_limit_var in c("speed_limit", "speed_limit_gs_before", "speed_limit_g
   
   ## Transition Object
   cost_t <- transition(roads_r, function(x) 1/mean(x), directions=8)
-
+  
   ## Travel Time Matrix
   tt_df <- make_travel_time_matrix(points_sdf = clusters_df,
                                    uid_name = "uid",
@@ -86,7 +86,7 @@ for (speed_limit_var in c("speed_limit", "speed_limit_gs_before", "speed_limit_g
   
   i <- 1
   for(theta in c(1, 3.8, 8)){
-    for(exclude_km in c(10, 20, 50, 100)){
+    for(exclude_km in c(0,10, 20, 50, 100)){
       for(market_var in c("pop", "rdlength")){
         for(travel_cost_var in c("travel_time", "distance_km")){
           
@@ -116,6 +116,3 @@ for (speed_limit_var in c("speed_limit", "speed_limit_gs_before", "speed_limit_g
                                "individual_files",  
                                paste0("irq_market_access_",speed_limit_var,".Rds")))
 }
-
-
-

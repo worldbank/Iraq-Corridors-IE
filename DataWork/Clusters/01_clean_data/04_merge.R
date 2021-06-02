@@ -40,15 +40,17 @@ data_time_invar_sdf <- merge(data_time_invar_sdf, data_time_invar_df, by = "uid"
 #### Export
 saveRDS(data_time_invar_sdf, file.path(data_file_path, "Clusters", 
                                        "FinalData", 
-                                       "subdistrict_timeinvariant_data_sp.Rds"))
+                                       "cluster_timeinvariant_data_sp.Rds"))
 
 # Merge with VIIRS -------------------------------------------------------------
 viirs_df <- readRDS(file.path(INDIV_FILE_PATH, "irq_viirs_monthly.Rds"))
 viirs_df <- merge(viirs_df, data_time_invar_df, by = "uid")
 
+test <- viirs_df[which(is.na(viirs_df$viirs_mean)),]
+
 #### Export
 saveRDS(viirs_df, file.path(data_file_path, "Clusters", 
                             "FinalData", 
-                            "subdistrict_data_df.Rds"))
+                            "cluster_data_df.Rds"))
 
 

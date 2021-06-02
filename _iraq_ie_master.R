@@ -68,6 +68,13 @@ library(viridis)
 library(ggpubr)
 library(jtools)
 library(Manu)
+library(osrm)
+library(formattable)
+library(geojsonio)
+library(DataCombine)
+
+
+
 
 source("https://raw.githubusercontent.com/ramarty/fast-functions/master/R/functions_in_chunks.R")
 source("https://raw.githubusercontent.com/ramarty/rgeos_chunks/master/R/rgeos_chunks.R")
